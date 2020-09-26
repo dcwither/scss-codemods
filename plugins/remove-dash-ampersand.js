@@ -1,22 +1,37 @@
-function isStarterNode(node) {
+function shouldGoAfter(decl, node) {
   return (
     node.type === "comment" ||
-    (node.type === "decl" && node.prop.startsWith("$")) ||
-    (node.type === "atrule" && node.name === "import")
+    (node.type === "atrule" && node.name === "import") ||
+    (node.type === "decl" &&
+      node.prop.startsWith("$") &&
+      !node.value.includes(decl.prop))
   );
 }
 
-function insertAfterDollarDecls(parent, node) {
+function insertDeclInPlace(parent, decl) {
   let beforeNode = parent.first;
 
   while (
     // Should go after initial comments and existing variable declarations
-    isStarterNode(beforeNode)
+    shouldGoAfter(decl, beforeNode)
   ) {
     beforeNode = beforeNode.next();
   }
 
-  parent.insertBefore(beforeNode, node);
+  parent.insertBefore(beforeNode, decl);
+}
+
+function recursivePromoteDollarDecls(dollarProps, decl, ruleParent, rule) {
+  for (const [dollarProp, dollarDecl] of Object.entries(dollarProps)) {
+    if (decl.value.includes(dollarProp) && ruleParent === dollarDecl.parent) {
+      console.log(
+        `${dollarProp} was found in ${rule.selector} and needs to be moved`
+      );
+
+      insertDeclInPlace(dollarDecl.parent.parent, dollarDecl);
+      recursivePromoteDollarDecls(dollarProps, dollarDecl, ruleParent, rule);
+    }
+  }
 }
 
 module.exports = (options = {}) => {
@@ -58,20 +73,7 @@ module.exports = (options = {}) => {
 
           // Look in rule to see if it contains dollar vars declared in parent
           rule.walkDecls((decl) => {
-            for (const [dollarProp, dollarDecl] of Object.entries(
-              dollarProps
-            )) {
-              if (
-                decl.value.includes(dollarProp) &&
-                ruleParent === dollarDecl.parent
-              ) {
-                console.log(
-                  `${dollarProp} was found in ${rule.selector} and needs to be moved`
-                );
-
-                insertAfterDollarDecls(dollarDecl.parent.parent, dollarDecl);
-              }
-            }
+            recursivePromoteDollarDecls(dollarProps, decl, ruleParent, rule);
           });
 
           // https://postcss.org/api/#atrule-insertafter

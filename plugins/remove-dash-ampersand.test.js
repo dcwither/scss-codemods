@@ -187,4 +187,68 @@ describe("remove-dash-ampersand", () => {
       `);
     });
   });
+
+  it("should respect $var order dependencies", async () => {
+    expect(
+      await process(dedent`
+        // comment
+        @import "something";
+
+        $var: 1;
+        .rule {
+          $blue: #0000FF;
+          $light-blue: lighten($blue, 0.2);
+          
+          &-extension {
+            background-color: $light-blue;
+            color: $blue;
+          }
+        }
+      `)
+    ).toMatchInlineSnapshot(`
+      "/* comment*/
+      @import \\"something\\";
+
+      $var: 1;
+      $blue: #0000FF;
+      $light-blue: lighten($blue, 0.2);
+      .rule {
+      }
+      .rule-extension {
+          background-color: $light-blue;
+          color: $blue;
+        }"
+    `);
+  });
+
+  it("should respect recursive $var dependencies", async () => {
+    expect(
+      await process(dedent`
+        // comment
+        @import "something";
+
+        $var: 1;
+        .rule {
+          $blue: #0000FF;
+          $light-blue: lighten($blue, 0.2);
+          
+          &-extension {
+            color: $light-blue;
+          }
+        }
+      `)
+    ).toMatchInlineSnapshot(`
+      "/* comment*/
+      @import \\"something\\";
+
+      $var: 1;
+      $blue: #0000FF;
+      $light-blue: lighten($blue, 0.2);
+      .rule {
+      }
+      .rule-extension {
+          color: $light-blue;
+        }"
+    `);
+  });
 });

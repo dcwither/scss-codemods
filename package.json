@@ -21,5 +21,14 @@
   "bugs": {
     "url": "https://github.com/dcwither/scss-codemods/issues"
   },
-  "homepage": "https://github.com/dcwither/scss-codemods#readme"
+  "homepage": "https://github.com/dcwither/scss-codemods#readme",
+  "devDependencies": {
+    "dedent-js": "^1.0.1",
+    "jest": "^26.4.2",
+    "prettier": "^2.1.2"
+  },
+  "dependencies": {
+    "postcss": "^8.0.9",
+    "postcss-scss": "^3.0.1"
+  }
 }

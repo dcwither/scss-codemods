@@ -1,0 +1,25 @@
+{
+  "name": "scss-codemods",
+  "version": "0.0.0",
+  "description": "SCSS codemods written with postcss plugins",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dcwither/scss-codemods.git"
+  },
+  "keywords": [
+    "scss",
+    "codemod",
+    "postcss",
+    "sass"
+  ],
+  "author": "Devin Witherspoon",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/dcwither/scss-codemods/issues"
+  },
+  "homepage": "https://github.com/dcwither/scss-codemods#readme"
+}

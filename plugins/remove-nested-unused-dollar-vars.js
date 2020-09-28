@@ -14,17 +14,27 @@ module.exports = (options = {}) => {
               toRemove[decl.prop] = decl;
             }
 
-            // are any of the declared props in the decls gathered?
+            // are any of the dollar decls used in the values of other decls
             for (const [dollarProp, dollarDecl] of Object.entries(toRemove)) {
               if (decl.value.includes(dollarProp)) {
                 delete toRemove[dollarProp];
               }
             }
           });
+
           rule.walkAtRules((atRule) => {
-            // are any of the declared props in the decls gathered?
+            // are any of the dollar decls used in the params of @ rules
             for (const [dollarProp, dollarDecl] of Object.entries(toRemove)) {
               if (atRule.params.includes(dollarProp)) {
+                delete toRemove[dollarProp];
+              }
+            }
+          });
+
+          rule.walkRules((rule) => {
+            // are any of the dollar decls interpolated into rules
+            for (const [dollarProp, dollarDecl] of Object.entries(toRemove)) {
+              if (rule.selector.includes(`#{${dollarProp}`)) {
                 delete toRemove[dollarProp];
               }
             }

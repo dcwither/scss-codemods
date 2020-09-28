@@ -50,6 +50,22 @@ describe("remove-empty-rules", () => {
     `);
   });
 
+  it("should ignore dollar decls used in @ rules", async () => {
+    expect(
+      await process(dedent`
+        .rule {
+          $used: name;
+          .#{$used} {}
+        }
+      `)
+    ).toMatchInlineSnapshot(`
+      ".rule {
+        $used: name;
+        .#{$used} {}
+      }"
+    `);
+  });
+
   it("should remove unused dollar decl chains", async () => {
     expect(
       await process(dedent`

@@ -24,10 +24,6 @@ function insertDeclInPlace(parent, decl) {
 function recursivePromoteDollarDecls(dollarProps, decl, ruleParent, rule) {
   for (const [dollarProp, dollarDecl] of Object.entries(dollarProps)) {
     if (decl.value.includes(dollarProp) && ruleParent === dollarDecl.parent) {
-      console.log(
-        `${dollarProp} was found in ${rule.selector} and needs to be moved`
-      );
-
       insertDeclInPlace(dollarDecl.parent.parent, dollarDecl);
       recursivePromoteDollarDecls(dollarProps, dollarDecl, ruleParent, rule);
     }

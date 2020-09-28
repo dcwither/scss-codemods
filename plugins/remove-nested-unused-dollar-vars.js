@@ -21,6 +21,14 @@ module.exports = (options = {}) => {
               }
             }
           });
+          rule.walkAtRules((atRule) => {
+            // are any of the declared props in the decls gathered?
+            for (const [dollarProp, dollarDecl] of Object.entries(toRemove)) {
+              if (atRule.params.includes(dollarProp)) {
+                delete toRemove[dollarProp];
+              }
+            }
+          });
 
           // remove the ones that have no uses
           for (const [dollarProp, dollarDecl] of Object.entries(toRemove)) {

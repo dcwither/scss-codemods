@@ -2,7 +2,7 @@
   "name": "scss-codemods",
   "version": "0.0.0",
   "description": "SCSS codemods written with postcss plugins",
-  "main": "index.js",
+  "main": "postcss.config.js",
   "scripts": {
     "test": "jest"
   },

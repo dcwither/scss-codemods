@@ -30,6 +30,12 @@ function recursivePromoteDollarDecls(dollarProps, decl, ruleParent, rule) {
   }
 }
 
+function parentHasMatchingDollarDecl(rule, decl) {}
+
+function getSelectors(rule) {
+  return rule.selector.split(",").map((selector) => selector.trim());
+}
+
 module.exports = (options = {}) => {
   // Work with options here
   return {
@@ -57,12 +63,14 @@ module.exports = (options = {}) => {
           return;
         }
 
-        const selectors = rule.selector
-          .split(",")
-          .map((selector) => selector.trim());
+        const selectors = getSelectors(rule);
 
         if (selectors.every((selector) => selector.startsWith("&-"))) {
-          rule.selector = rule.selector.replace(/&/g, ruleParent.selector);
+          rule.selector = getSelectors(rule.parent)
+            .map((parentSelector) =>
+              rule.selector.replace(/&/g, parentSelector)
+            )
+            .join(", ");
           if (lastParent !== ruleParent) {
             insertAfterTarget = lastParent = ruleParent;
           }

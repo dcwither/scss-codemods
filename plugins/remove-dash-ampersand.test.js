@@ -10,13 +10,13 @@ describe("remove-dash-ampersand", () => {
       expect(
         await process(dedent`
           .rule { 
-            &-extension {}
+            &-part1 {}
           }
         `)
       ).toMatchInlineSnapshot(`
         ".rule {
         } 
-          .rule-extension {}"
+          .rule-part1 {}"
       `);
     });
 
@@ -101,6 +101,21 @@ describe("remove-dash-ampersand", () => {
       `);
     });
 
+    it("should work with multiple parent selectors", async () => {
+      expect(
+        await process(dedent`
+        .rule1,
+        .rule2 { 
+          &-part1 {}
+        }`)
+      ).toMatchInlineSnapshot(`
+        ".rule1,
+        .rule2 {
+        } 
+          .rule1-part1, .rule2-part1 {}"
+      `);
+    });
+
     it("should fully transform rules with multiple &- selectors", async () => {
       expect(
         await process(dedent`
@@ -113,6 +128,24 @@ describe("remove-dash-ampersand", () => {
         } 
           .rule-part1,
           .rule-part2 {}"
+      `);
+    });
+
+    it("should work with multiple parent selectors, and multiple &- selectors", async () => {
+      expect(
+        await process(dedent`
+        .rule1,
+        .rule2 { 
+          &-part1,
+          &-part2 {}
+        }`)
+      ).toMatchInlineSnapshot(`
+        ".rule1,
+        .rule2 {
+        } 
+          .rule1-part1,
+          .rule1-part2, .rule2-part1,
+          .rule2-part2 {}"
       `);
     });
   });
@@ -136,13 +169,66 @@ describe("remove-dash-ampersand", () => {
       `);
     });
 
+    it("should promote duplicate variables when possible", async () => {
+      expect(
+        await process(dedent`
+          .rule {
+            $blue: #0000FF;
+            &-part1 {
+              $blue: #0000BB;
+              &-part2 {
+                color: $blue;
+              }
+            }
+          }
+        `)
+      ).toMatchInlineSnapshot(`
+        "
+            $blue: #0000BB;
+          .rule {
+          $blue: #0000FF
+        }
+          .rule-part1 {
+          }
+          .rule-part1-part2 {
+              color: $blue;
+            }"
+      `);
+    });
+
+    it("should throw when unable to promote duplicate variables", async () => {
+      expect(
+        await process(dedent`
+          $blue: #0000FF;
+
+          .rule {
+            $blue: #0000BB;
+            &-part1 {
+              color: $blue
+            }
+          }
+        `)
+      ).toMatchInlineSnapshot(`
+        "$blue: #0000FF;
+
+        $blue: #0000BB;
+
+        .rule {
+        }
+
+        .rule-part1 {
+            color: $blue
+          }"
+      `);
+    });
+
     it("should promote a variable along with dependent rules", async () => {
       expect(
         await process(dedent`
           .rule {
             $blue: #0000FF;
             
-            &-extension {
+            &-part1 {
               color: $blue;
             }
           }
@@ -152,7 +238,7 @@ describe("remove-dash-ampersand", () => {
           $blue: #0000FF;
         .rule {
         }
-        .rule-extension {
+        .rule-part1 {
             color: $blue;
           }"
       `);
@@ -168,7 +254,7 @@ describe("remove-dash-ampersand", () => {
           .rule {
             $blue: #0000FF;
             
-            &-extension {
+            &-part1 {
               color: $blue;
             }
           }
@@ -181,7 +267,7 @@ describe("remove-dash-ampersand", () => {
         $blue: #0000FF;
         .rule {
         }
-        .rule-extension {
+        .rule-part1 {
             color: $blue;
           }"
       `);
@@ -199,7 +285,7 @@ describe("remove-dash-ampersand", () => {
           $blue: #0000FF;
           $light-blue: lighten($blue, 0.2);
           
-          &-extension {
+          &-part1 {
             background-color: $light-blue;
             color: $blue;
           }
@@ -214,7 +300,7 @@ describe("remove-dash-ampersand", () => {
       $light-blue: lighten($blue, 0.2);
       .rule {
       }
-      .rule-extension {
+      .rule-part1 {
           background-color: $light-blue;
           color: $blue;
         }"
@@ -232,7 +318,7 @@ describe("remove-dash-ampersand", () => {
           $blue: #0000FF;
           $light-blue: lighten($blue, 0.2);
           
-          &-extension {
+          &-part1 {
             color: $light-blue;
           }
         }
@@ -246,7 +332,7 @@ describe("remove-dash-ampersand", () => {
       $light-blue: lighten($blue, 0.2);
       .rule {
       }
-      .rule-extension {
+      .rule-part1 {
           color: $light-blue;
         }"
     `);

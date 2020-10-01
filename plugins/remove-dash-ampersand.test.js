@@ -36,6 +36,8 @@ describe("remove-dash-ampersand", () => {
       `);
     });
 
+    // Test insert after respects parent changes
+
     it("should work with nested child rules", async () => {
       expect(
         await process(dedent`
@@ -53,6 +55,20 @@ describe("remove-dash-ampersand", () => {
           .rule-part1-part2 {}"
       `);
     });
+
+    // it("should work with nested child rules", async () => {
+    //   expect(
+    //     await process(dedent`
+    //       .rule {
+    //         & &-part1 {}
+    //       }
+    //     `)
+    //   ).toMatchInlineSnapshot(`
+    //     ".rule {
+    //       & &-part1 {}
+    //     }"
+    //   `);
+    // });
 
     it("should not affect rules without &-", async () => {
       expect(

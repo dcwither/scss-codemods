@@ -9,11 +9,11 @@ module.exports = (options = {}) => {
         removed = false;
         root.walkRules((rule) => {
           const toRemove = {};
-          rule.walkDecls((decl) => {
-            if (decl.prop.startsWith("$")) {
-              toRemove[decl.prop] = decl;
-            }
+          rule.walkDecls(/^\$/, (decl) => {
+            toRemove[decl.prop] = decl;
+          });
 
+          rule.walkDecls((decl) => {
             // are any of the dollar decls used in the values of other decls
             for (const [dollarProp, dollarDecl] of Object.entries(toRemove)) {
               if (decl.value.includes(dollarProp)) {
@@ -31,7 +31,7 @@ module.exports = (options = {}) => {
             }
           });
 
-          rule.walkRules((rule) => {
+          rule.walkRules(/\#\{\$/, (rule) => {
             // are any of the dollar decls interpolated into rules
             for (const [dollarProp, dollarDecl] of Object.entries(toRemove)) {
               if (rule.selector.includes(`#{${dollarProp}`)) {

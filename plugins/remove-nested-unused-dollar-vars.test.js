@@ -4,7 +4,7 @@ const removeEmptyRules = require("./remove-nested-unused-dollar-vars");
 
 const process = createProcessor(removeEmptyRules);
 
-describe("remove-empty-rules", () => {
+describe("remove-nested-unused-dollar-vars", () => {
   it("should remove an unused dollar decl", async () => {
     expect(
       await process(dedent`

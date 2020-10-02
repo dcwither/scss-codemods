@@ -11,6 +11,7 @@ function isAncestor(ancestor, descendant) {
 
 module.exports = class DollarDeclTree {
   constructor(root) {
+    this.root = root;
     this.dollarDecls = {};
     root.walkDecls(/^\$/, (decl) => {
       if (!this.dollarDecls[decl.prop]) {
@@ -28,6 +29,17 @@ module.exports = class DollarDeclTree {
 
   get props() {
     return Object.keys(this.dollarDecls);
+  }
+
+  get entries() {
+    const entries = [];
+    for (const [prop, decls] of Object.entries(this.dollarDecls)) {
+      for (const decl of decls) {
+        entries.push([prop, decl]);
+      }
+    }
+
+    return entries;
   }
 
   getDollarDecl(node, prop) {
@@ -48,5 +60,57 @@ module.exports = class DollarDeclTree {
     }
 
     return true;
+  }
+
+  isDollarDeclUsed(dollarDecl) {
+    let used = false;
+    this.root.walkDecls((decl) => {
+      // are any of the dollar decls used in the values of other decls
+      if (
+        decl.value.includes(dollarDecl.prop) &&
+        this.getDollarDecl(decl, dollarDecl.prop) === dollarDecl
+      ) {
+        used = true;
+      }
+    });
+    this.root.walkAtRules((atRule) => {
+      // are any of the dollar decls used in the params of @ rules
+      if (
+        atRule.params.includes(dollarDecl.prop) &&
+        this.getDollarDecl(atRule.parent, dollarDecl.prop) === dollarDecl
+      ) {
+        used = true;
+      }
+    });
+
+    this.root.walkRules(/\#\{\$/, (rule) => {
+      // are any of the dollar decls interpolated into rules
+      if (
+        rule.selector.includes(`#{${dollarDecl.prop}`) &&
+        this.getDollarDecl(rule.parent, dollarDecl.prop) === dollarDecl
+      ) {
+        used = true;
+      }
+    });
+
+    return used;
+  }
+
+  removeUnused() {
+    let removed;
+    do {
+      removed = false;
+      for (const [prop, decl] of this.entries) {
+        if (
+          decl.parent &&
+          decl.parent !== this.root &&
+          !this.isDollarDeclUsed(decl)
+        ) {
+          // declaration is in the AST, it's not a root decl, and it's not used
+          removed = true;
+          decl.remove();
+        }
+      }
+    } while (removed === true);
   }
 };

@@ -55,13 +55,16 @@ describe("remove-nested-unused-dollar-vars", () => {
       await process(dedent`
         .rule {
           $used: name;
-          .#{$used} {}
+          .#{$used} {
+            $used: not used here;
+          }
         }
       `)
     ).toMatchInlineSnapshot(`
       ".rule {
         $used: name;
-        .#{$used} {}
+        .#{$used} {
+        }
       }"
     `);
   });
@@ -76,6 +79,50 @@ describe("remove-nested-unused-dollar-vars", () => {
       `)
     ).toMatchInlineSnapshot(`
       ".rule {
+      }"
+    `);
+  });
+
+  it("should remove unused duplicate decls", async () => {
+    expect(
+      await process(dedent`
+      .rule {
+        $rootused: 1;
+          .part1 {
+            color: $rootused;
+            .part2 {
+
+              $rootused: 2;
+            }
+          }
+        }
+      `)
+    ).toMatchInlineSnapshot(`
+      ".rule {
+        $rootused: 1;
+          .part1 {
+            color: $rootused;
+            .part2 {
+            }
+          }
+        }"
+    `);
+  });
+
+  it("should remove unused duplicate decls", async () => {
+    expect(
+      await process(dedent`
+        .rule {
+          $bothunused: 1;
+          .part1 {
+            $bothunused: 2;
+          }
+        }
+      `)
+    ).toMatchInlineSnapshot(`
+      ".rule {
+        .part1 {
+        }
       }"
     `);
   });

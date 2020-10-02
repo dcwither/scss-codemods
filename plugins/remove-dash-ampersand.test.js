@@ -56,19 +56,28 @@ describe("remove-dash-ampersand", () => {
       `);
     });
 
-    // it("should work with nested child rules", async () => {
-    //   expect(
-    //     await process(dedent`
-    //       .rule {
-    //         & &-part1 {}
-    //       }
-    //     `)
-    //   ).toMatchInlineSnapshot(`
-    //     ".rule {
-    //       & &-part1 {}
-    //     }"
-    //   `);
-    // });
+    it("should maintain expanded order", async () => {
+      expect(
+        await process(dedent`
+          .rule1 {
+            &-part1 {}
+          }
+
+          .rule2 {
+            &-part2 {}
+          }
+        `)
+      ).toMatchInlineSnapshot(`
+        ".rule1 {
+        }
+          .rule1-part1 {}
+
+        .rule2 {
+        }
+
+        .rule2-part2 {}"
+      `);
+    });
 
     it("should not affect rules without &-", async () => {
       expect(
@@ -214,28 +223,20 @@ describe("remove-dash-ampersand", () => {
 
     it("should throw when unable to promote duplicate variables", async () => {
       expect(
-        await process(dedent`
-          $blue: #0000FF;
+        async () =>
+          await process(dedent`
+            $blue: #0000FF;
 
-          .rule {
-            $blue: #0000BB;
-            &-part1 {
-              color: $blue
+            .rule {
+              $blue: #0000BB;
+              &-part1 {
+                color: $blue
+              }
             }
-          }
-        `)
-      ).toMatchInlineSnapshot(`
-        "$blue: #0000FF;
-
-        $blue: #0000BB;
-
-        .rule {
-        }
-
-        .rule-part1 {
-            color: $blue
-          }"
-      `);
+          `)
+      ).rejects.toMatchInlineSnapshot(
+        `[Error: cannot promote decl $blue: #0000BB]`
+      );
     });
 
     it("should promote a variable along with dependent rules", async () => {
@@ -288,69 +289,68 @@ describe("remove-dash-ampersand", () => {
           }"
       `);
     });
-  });
-
-  it("should respect $var order dependencies", async () => {
-    expect(
-      await process(dedent`
-        // comment
-        @import "something";
-
-        $var: 1;
-        .rule {
-          $blue: #0000FF;
-          $light-blue: lighten($blue, 0.2);
-          
-          &-part1 {
-            background-color: $light-blue;
-            color: $blue;
+    it("should respect $var order dependencies", async () => {
+      expect(
+        await process(dedent`
+          // comment
+          @import "something";
+  
+          $var: 1;
+          .rule {
+            $blue: #0000FF;
+            $light-blue: lighten($blue, 0.2);
+            
+            &-part1 {
+              background-color: $light-blue;
+              color: $blue;
+            }
           }
-        }
-      `)
-    ).toMatchInlineSnapshot(`
-      "/* comment*/
-      @import \\"something\\";
+        `)
+      ).toMatchInlineSnapshot(`
+        "        /* comment*/
+                @import \\"something\\";
 
-      $var: 1;
-      $blue: #0000FF;
-      $light-blue: lighten($blue, 0.2);
-      .rule {
-      }
-      .rule-part1 {
-          background-color: $light-blue;
-          color: $blue;
-        }"
-    `);
-  });
+                $var: 1;
+                $blue: #0000FF;
+                $light-blue: lighten($blue, 0.2);
+                .rule {
+                }
+                .rule-part1 {
+                    background-color: $light-blue;
+                    color: $blue;
+                  }"
+      `);
+    });
 
-  it("should respect recursive $var dependencies", async () => {
-    expect(
-      await process(dedent`
-        // comment
-        @import "something";
-
-        $var: 1;
-        .rule {
-          $blue: #0000FF;
-          $light-blue: lighten($blue, 0.2);
-          
-          &-part1 {
-            color: $light-blue;
+    it("should respect recursive $var dependencies", async () => {
+      expect(
+        await process(dedent`
+          // comment
+          @import "something";
+  
+          $var: 1;
+          .rule {
+            $blue: #0000FF;
+            $light-blue: lighten($blue, 0.2);
+            
+            &-part1 {
+              color: $light-blue;
+            }
           }
-        }
-      `)
-    ).toMatchInlineSnapshot(`
-      "/* comment*/
-      @import \\"something\\";
+        `)
+      ).toMatchInlineSnapshot(`
+        "        /* comment*/
+                @import \\"something\\";
 
-      $var: 1;
-      $blue: #0000FF;
-      $light-blue: lighten($blue, 0.2);
-      .rule {
-      }
-      .rule-part1 {
-          color: $light-blue;
-        }"
-    `);
+                $var: 1;
+                $blue: #0000FF;
+                $light-blue: lighten($blue, 0.2);
+                .rule {
+                }
+                .rule-part1 {
+                    color: $light-blue;
+                  }"
+      `);
+    });
   });
 });

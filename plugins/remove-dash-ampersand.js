@@ -1,3 +1,5 @@
+const DollarDeclTree = require("../utils/dollar-decl-tree");
+
 function shouldGoAfter(decl, node) {
   return (
     node.type === "comment" ||
@@ -21,13 +23,22 @@ function insertDeclInPlace(parent, decl) {
   parent.insertBefore(beforeNode, decl);
 }
 
-function recursivePromoteDollarDecls(dollarProps, decl, ruleParent, rule) {
-  for (const [dollarProp, dollarDecl] of Object.entries(dollarProps)) {
-    if (decl.value.includes(dollarProp) && ruleParent === dollarDecl.parent) {
+function recursivePromoteDollarDecls(dollarDecls, decl, rule) {
+  for (const dollarProp of dollarDecls.props) {
+    const dollarDecl = dollarDecls.getDollarDecl(rule, dollarProp);
+    if (dollarDecl && dollarDecl.parent === rule.parent) {
+      if (!dollarDecls.canPromoteDecl(dollarDecl)) {
+        throw new Error(`cannot promote decl ${dollarDecl}`);
+      }
+
       insertDeclInPlace(dollarDecl.parent.parent, dollarDecl);
-      recursivePromoteDollarDecls(dollarProps, dollarDecl, ruleParent, rule);
+      recursivePromoteDollarDecls(dollarDecls, dollarDecl, rule);
     }
   }
+}
+
+function getDecls(rule) {
+  return;
 }
 
 function parentHasMatchingDollarDecl(rule, decl) {}
@@ -44,21 +55,12 @@ module.exports = (options = {}) => {
       let lastParent = null;
       let insertAfterTarget = null;
 
-      const dollarProps = {};
-      root.walkDecls((decl) => {
-        if (dollarProps[decl.prop] !== undefined) {
-          console.trace(`There is a duplicate declaration ${decl.prop}`);
-          dollarProps[decl.prop] = null;
-        }
-
-        if (decl.prop.startsWith("$") && decl.parent !== root) {
-          dollarProps[decl.prop] = decl;
-        }
-      });
+      const dollarDecls = new DollarDeclTree(root);
 
       root.walkRules((rule) => {
-        const ruleParent = rule.parent;
-        if (ruleParent.type !== "rule") {
+        // produce rule's top level decls
+
+        if (rule.parent.type !== "rule") {
           // ignore media queries for now
           return;
         }
@@ -71,17 +73,17 @@ module.exports = (options = {}) => {
               rule.selector.replace(/&/g, parentSelector)
             )
             .join(", ");
-          if (lastParent !== ruleParent) {
-            insertAfterTarget = lastParent = ruleParent;
+          if (lastParent !== rule.parent) {
+            insertAfterTarget = lastParent = rule.parent;
           }
 
           // Look in rule to see if it contains dollar vars declared in parent
           rule.walkDecls((decl) => {
-            recursivePromoteDollarDecls(dollarProps, decl, ruleParent, rule);
+            recursivePromoteDollarDecls(dollarDecls, decl, rule);
           });
 
           // https://postcss.org/api/#atrule-insertafter
-          ruleParent.parent.insertAfter(insertAfterTarget, rule);
+          rule.parent.parent.insertAfter(insertAfterTarget, rule);
           insertAfterTarget = rule;
         }
       });

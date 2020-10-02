@@ -1,5 +1,4 @@
 const { createProcessor } = require("../test-helpers");
-const dedent = require("dedent-js");
 const removeEmptyRules = require("./remove-nested-unused-dollar-vars");
 
 const process = createProcessor(removeEmptyRules);
@@ -7,52 +6,52 @@ const process = createProcessor(removeEmptyRules);
 describe("remove-nested-unused-dollar-vars", () => {
   it("should remove an unused dollar decl", async () => {
     expect(
-      await process(dedent`
+      await process(`
         .rule {
           $unused: 1;
         }
       `)
     ).toMatchInlineSnapshot(`
-      ".rule {
-      }"
+      .rule {
+      }
     `);
   });
 
   it("should ignore used dollar decls", async () => {
     expect(
-      await process(dedent`
+      await process(`
         .rule {
           $used: #000000;
           color: $used;
         }
       `)
     ).toMatchInlineSnapshot(`
-      ".rule {
+      .rule {
         $used: #000000;
         color: $used;
-      }"
+      }
     `);
   });
 
   it("should ignore dollar decls used in @ rules", async () => {
     expect(
-      await process(dedent`
+      await process(`
         .rule {
           $used: #000000;
           @include box-shadow($used)
         }
       `)
     ).toMatchInlineSnapshot(`
-      ".rule {
+      .rule {
         $used: #000000;
-        @include box-shadow($used)
-      }"
+        @include box-shadow($used);
+      }
     `);
   });
 
   it("should ignore dollar decls used in @ rules", async () => {
     expect(
-      await process(dedent`
+      await process(`
         .rule {
           $used: name;
           .#{$used} {
@@ -61,31 +60,31 @@ describe("remove-nested-unused-dollar-vars", () => {
         }
       `)
     ).toMatchInlineSnapshot(`
-      ".rule {
+      .rule {
         $used: name;
         .#{$used} {
         }
-      }"
+      }
     `);
   });
 
   it("should remove unused dollar decl chains", async () => {
     expect(
-      await process(dedent`
+      await process(`
         .rule {
           $unused-1: 1;
           $unused-2: 2 * $unused-1;
         }
       `)
     ).toMatchInlineSnapshot(`
-      ".rule {
-      }"
+      .rule {
+      }
     `);
   });
 
   it("should remove unused duplicate decls", async () => {
     expect(
-      await process(dedent`
+      await process(`
       .rule {
         $rootused: 1;
           .part1 {
@@ -98,20 +97,20 @@ describe("remove-nested-unused-dollar-vars", () => {
         }
       `)
     ).toMatchInlineSnapshot(`
-      ".rule {
+      .rule {
         $rootused: 1;
-          .part1 {
-            color: $rootused;
-            .part2 {
-            }
+        .part1 {
+          color: $rootused;
+          .part2 {
           }
-        }"
+        }
+      }
     `);
   });
 
   it("should remove unused duplicate decls", async () => {
     expect(
-      await process(dedent`
+      await process(`
         .rule {
           $bothunused: 1;
           .part1 {
@@ -120,16 +119,16 @@ describe("remove-nested-unused-dollar-vars", () => {
         }
       `)
     ).toMatchInlineSnapshot(`
-      ".rule {
+      .rule {
         .part1 {
         }
-      }"
+      }
     `);
   });
 
   it("should ignore global rules even if unused", async () => {
     expect(
-      await process(dedent`
+      await process(`
         $unused-global: 1;
         .rule {
           $unused-1: used;
@@ -137,9 +136,9 @@ describe("remove-nested-unused-dollar-vars", () => {
         }
       `)
     ).toMatchInlineSnapshot(`
-      "$unused-global: 1;
+      $unused-global: 1;
       .rule {
-      }"
+      }
     `);
   });
 });

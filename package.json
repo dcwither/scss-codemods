@@ -23,7 +23,6 @@
   },
   "homepage": "https://github.com/dcwither/scss-codemods#readme",
   "devDependencies": {
-    "dedent-js": "^1.0.1",
     "jest": "^26.4.2",
     "prettier": "^2.1.2"
   },

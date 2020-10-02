@@ -1,5 +1,4 @@
 const { createProcessor } = require("../test-helpers");
-const dedent = require("dedent-js");
 const removeEmptyRules = require("./remove-empty-rules");
 
 const process = createProcessor(removeEmptyRules);
@@ -7,47 +6,47 @@ const process = createProcessor(removeEmptyRules);
 describe("remove-empty-rules", () => {
   it("should remove an empty rule", async () => {
     expect(
-      await process(dedent`
+      await process(`
         .rule {}
       `)
-    ).toMatchInlineSnapshot(`""`);
+    ).toMatchInlineSnapshot(``);
   });
 
   it("should remove nested empty rules", async () => {
     expect(
-      await process(dedent`
+      await process(`
         .rule {
           .inner-rule {}
         }
       `)
-    ).toMatchInlineSnapshot(`""`);
+    ).toMatchInlineSnapshot(``);
   });
 
   it("should ignore rules with declarations", async () => {
     expect(
-      await process(dedent`
+      await process(`
         .rule {
           color: #000000
         }
       `)
     ).toMatchInlineSnapshot(`
-      ".rule {
-        color: #000000
-      }"
+      .rule {
+        color: #000000;
+      }
     `);
   });
 
   it("should ignore variable declarations", async () => {
     expect(
-      await process(dedent`
+      await process(`
         .rule {
           $var: 1;
         }
       `)
     ).toMatchInlineSnapshot(`
-      ".rule {
+      .rule {
         $var: 1;
-      }"
+      }
     `);
   });
 });

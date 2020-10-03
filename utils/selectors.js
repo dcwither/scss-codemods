@@ -1,3 +1,4 @@
+const { compare } = require("specificity");
 /**
  * TODO: tests
  * - normal
@@ -44,7 +45,43 @@ function getSelectorList(root) {
 }
 
 function compareSelectorLists(before, after) {
-  return before.join("\n") === after.join("\n");
+  if (before.join("\n") === after.join("\n")) {
+    return "NO_CHANGES";
+  }
+
+  // console.log(before, after);
+  let prevDelta = 0;
+  let skippedRules = [];
+  for (let beforeIndex = 0; beforeIndex < before.length; beforeIndex++) {
+    const selector = before[beforeIndex];
+    const delta = after.indexOf(selector, beforeIndex) - beforeIndex;
+
+    if (delta !== prevDelta) {
+      if (delta > 0) {
+        prevDelta = delta;
+        skippedRules = after.slice(beforeIndex, beforeIndex + delta);
+      } else {
+        prevDelta = 0;
+        skippedRules = [];
+      }
+    }
+    if (prevDelta > 0) {
+      // Keep for now: debugging logs for unsafe change detection
+      // console.log(`${selector} skipped ${delta} rules: ${skippedRules}`);
+      for (const movedSelector of getSelectors(selector)) {
+        for (const skippedSelector of getSelectors(skippedRules.join(", "))) {
+          // moved selector has the same specificity as a skipped selector
+          if (compare(movedSelector, skippedSelector) === 0) {
+            // console.log(
+            //   `"${movedSelector}" might have made a bad move past "${skippedRules} with the same specificity"`
+            // );
+            return "UNSAFE_CHANGES";
+          }
+        }
+      }
+    }
+  }
+  return "SAFE_CHANGES";
 }
 
 module.exports = {

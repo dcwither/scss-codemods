@@ -155,21 +155,19 @@ function testCommonBehavior(process) {
         `);
     });
   });
+
   describe("dollar vars", () => {
     it("should leave root variables where they are", async () => {
       expect(
         await process(`
           $blue: #0000FF;
 
-          .rule {
-            color: $blue;
-          }
+          .rule {}
         `)
       ).toMatchInlineSnapshot(`
         $blue: #0000ff;
 
         .rule {
-          color: $blue;
         }
       `);
     });
@@ -368,15 +366,38 @@ describe("remove-dash-ampersand", () => {
     it("should abandon changes that reorder selectors", async () => {
       expect(
         await process(`
-          .rule { 
-            &-part1,
-            .something-else {} 
+          .rule1 { 
+            &-part1 {}
+            &-part2 {}
+            .something-else1 {}
+            .something-else2 {} 
+          }
+          .rule2 { 
+            &-part1 {}
+            &-part2 {}
+            .something-else1 {}
+            .something-else2 {} 
           }
         `)
       ).toMatchInlineSnapshot(`
-        .rule {
-          &-part1,
-          .something-else {
+        .rule1 {
+          &-part1 {
+          }
+          &-part2 {
+          }
+          .something-else1 {
+          }
+          .something-else2 {
+          }
+        }
+        .rule2 {
+          &-part1 {
+          }
+          &-part2 {
+          }
+          .something-else1 {
+          }
+          .something-else2 {
           }
         }
       `);

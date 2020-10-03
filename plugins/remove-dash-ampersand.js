@@ -83,19 +83,31 @@ module.exports = ({ strategy } = { strategy: "safe" }) => {
 
       switch (strategy) {
         case "safe":
+          if (
+            compareSelectorLists(
+              getSelectorList(root),
+              getSelectorList(workingRoot)
+            ) === "NO_CHANGES"
+          ) {
+            root.removeAll();
+            root.append(workingRoot.nodes);
+          }
+          return;
         case "cautious":
           if (
             compareSelectorLists(
               getSelectorList(root),
               getSelectorList(workingRoot)
-            )
+            ) !== "UNSAFE_CHANGES"
           ) {
-            root.nodes = workingRoot.nodes;
+            root.removeAll();
+            root.append(workingRoot.nodes);
           }
           return;
 
         case "aggressive":
-          root.nodes = workingRoot.nodes;
+          root.removeAll();
+          root.append(workingRoot.nodes);
           return;
       }
     },

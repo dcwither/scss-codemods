@@ -294,7 +294,7 @@ describe("remove-dash-ampersand", () => {
           }
         `)
       ).toMatchInlineSnapshot(`
-        /* comment*/
+        // comment
         @import "something";
 
         $var: 1;
@@ -324,7 +324,7 @@ describe("remove-dash-ampersand", () => {
           }
         `)
       ).toMatchInlineSnapshot(`
-        /* comment*/
+        // comment
         @import "something";
 
         $var: 1;
@@ -356,7 +356,7 @@ describe("remove-dash-ampersand", () => {
           }
         `)
       ).toMatchInlineSnapshot(`
-        /* comment*/
+        // comment
         @import "something";
 
         $var: 1;

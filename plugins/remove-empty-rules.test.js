@@ -1,7 +1,7 @@
 const { createProcessor } = require("../test-helpers");
 const removeEmptyRules = require("./remove-empty-rules");
 
-const process = createProcessor(removeEmptyRules);
+const process = createProcessor(removeEmptyRules());
 
 describe("remove-empty-rules", () => {
   it("should remove an empty rule", async () => {

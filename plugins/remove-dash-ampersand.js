@@ -1,4 +1,10 @@
 const DollarDeclTree = require("../utils/dollar-decl-tree");
+const {
+  combineSelectors,
+  compareSelectorLists,
+  getSelectorList,
+  getSelectors,
+} = require("../utils/selectors");
 
 function shouldGoAfter(decl, node) {
   return (
@@ -37,27 +43,18 @@ function recursivePromoteDollarDecls(dollarDecls, decl, rule) {
   }
 }
 
-function getDecls(rule) {
-  return;
-}
-
-function parentHasMatchingDollarDecl(rule, decl) {}
-
-function getSelectors(rule) {
-  return rule.selector.split(",").map((selector) => selector.trim());
-}
-
-module.exports = (options = {}) => {
+module.exports = ({ strategy } = { strategy: "safe" }) => {
   // Work with options here
   return {
     postcssPlugin: "remove-dash-ampersand",
     Root(root) {
+      const workingRoot = root.clone();
       let lastParent = null;
       let insertAfterTarget = null;
 
-      const dollarDecls = new DollarDeclTree(root);
+      const dollarDecls = new DollarDeclTree(workingRoot);
 
-      root.walkRules((rule) => {
+      workingRoot.walkRules((rule) => {
         // produce rule's top level decls
 
         if (rule.parent.type !== "rule") {
@@ -65,14 +62,10 @@ module.exports = (options = {}) => {
           return;
         }
 
-        const selectors = getSelectors(rule);
+        const selectors = getSelectors(rule.selector);
 
         if (selectors.every((selector) => selector.startsWith("&-"))) {
-          rule.selector = getSelectors(rule.parent)
-            .map((parentSelector) =>
-              rule.selector.replace(/&/g, parentSelector)
-            )
-            .join(", ");
+          rule.selector = combineSelectors(rule.parent.selector, rule.selector);
           if (lastParent !== rule.parent) {
             insertAfterTarget = lastParent = rule.parent;
           }
@@ -87,6 +80,24 @@ module.exports = (options = {}) => {
           insertAfterTarget = rule;
         }
       });
+
+      switch (strategy) {
+        case "safe":
+        case "cautious":
+          if (
+            compareSelectorLists(
+              getSelectorList(root),
+              getSelectorList(workingRoot)
+            )
+          ) {
+            root.nodes = workingRoot.nodes;
+          }
+          return;
+
+        case "aggressive":
+          root.nodes = workingRoot.nodes;
+          return;
+      }
     },
   };
 };

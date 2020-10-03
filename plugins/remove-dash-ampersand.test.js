@@ -1,10 +1,8 @@
 const { createProcessor } = require("../test-helpers");
 const removeDashAmpersand = require("./remove-dash-ampersand");
 
-const process = createProcessor(removeDashAmpersand);
-
-describe("remove-dash-ampersand", () => {
-  describe("unwinding", () => {
+function testCommonBehavior(process) {
+  describe("unwind", () => {
     it("should fold out dash ampersand rules", async () => {
       expect(
         await process(`
@@ -65,7 +63,7 @@ describe("remove-dash-ampersand", () => {
           .rule1 {
             &-part1 {}
           }
-
+    
           .rule2 {
             &-part2 {}
           }
@@ -80,42 +78,6 @@ describe("remove-dash-ampersand", () => {
         }
 
         .rule2-part2 {
-        }
-      `);
-    });
-
-    it("should not affect rules without &-", async () => {
-      expect(
-        await process(`
-          .rule { 
-            &-part1 {} 
-            .something-else {} 
-          }
-        `)
-      ).toMatchInlineSnapshot(`
-        .rule {
-          .something-else {
-          }
-        }
-        .rule-part1 {
-        }
-      `);
-    });
-
-    it("should not affect rules without &-", async () => {
-      expect(
-        await process(`
-          .rule { 
-            &-part1 {} 
-            .something-else {} 
-          }
-        `)
-      ).toMatchInlineSnapshot(`
-        .rule {
-          .something-else {
-          }
-        }
-        .rule-part1 {
         }
       `);
     });
@@ -190,10 +152,9 @@ describe("remove-dash-ampersand", () => {
         .rule2-part1,
         .rule2-part2 {
         }
-      `);
+        `);
     });
   });
-
   describe("dollar vars", () => {
     it("should leave root variables where they are", async () => {
       expect(
@@ -366,6 +327,57 @@ describe("remove-dash-ampersand", () => {
         }
         .rule-part1 {
           color: $light-blue;
+        }
+      `);
+    });
+  });
+}
+
+describe("remove-dash-ampersand", () => {
+  describe("aggressive", () => {
+    const process = createProcessor(
+      removeDashAmpersand({ strategy: "aggressive" })
+    );
+
+    testCommonBehavior(process);
+
+    it("should not affect rules without &-", async () => {
+      expect(
+        await process(`
+          .rule { 
+            &-part1 {} 
+            .something-else {} 
+          }
+        `)
+      ).toMatchInlineSnapshot(`
+        .rule {
+          .something-else {
+          }
+        }
+        .rule-part1 {
+        }
+      `);
+    });
+  });
+
+  describe("safe", () => {
+    const process = createProcessor(removeDashAmpersand({ strategy: "safe" }));
+
+    testCommonBehavior(process);
+
+    it("should abandon changes that reorder selectors", async () => {
+      expect(
+        await process(`
+          .rule { 
+            &-part1,
+            .something-else {} 
+          }
+        `)
+      ).toMatchInlineSnapshot(`
+        .rule {
+          &-part1,
+          .something-else {
+          }
         }
       `);
     });

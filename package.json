@@ -27,7 +27,9 @@
     "prettier": "^2.1.2"
   },
   "dependencies": {
+    "minimist": "^1.2.5",
     "postcss": "^8.0.9",
-    "postcss-scss": "^3.0.1"
+    "postcss-scss": "^3.0.1",
+    "specificity": "^0.4.1"
   }
 }

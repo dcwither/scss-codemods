@@ -13,7 +13,7 @@ expect.addSnapshotSerializer({
 });
 
 function createProcessor(plugin) {
-  const configured = postcss([plugin()]);
+  const configured = postcss([plugin]);
   return async (css) => {
     const result = await configured.process(css, {
       parser: postcssScss,

@@ -1,7 +1,7 @@
 const { createProcessor } = require("../test-helpers");
 const removeEmptyRules = require("./remove-nested-unused-dollar-vars");
 
-const process = createProcessor(removeEmptyRules);
+const process = createProcessor(removeEmptyRules());
 
 describe("remove-nested-unused-dollar-vars", () => {
   it("should remove an unused dollar decl", async () => {
@@ -86,21 +86,21 @@ describe("remove-nested-unused-dollar-vars", () => {
     expect(
       await process(`
       .rule {
-        $rootused: 1;
+        $parentUsed: 1;
           .part1 {
-            color: $rootused;
+            color: $parentUsed;
             .part2 {
 
-              $rootused: 2;
+              $parentUsed: 2;
             }
           }
         }
       `)
     ).toMatchInlineSnapshot(`
       .rule {
-        $rootused: 1;
+        $parentUsed: 1;
         .part1 {
-          color: $rootused;
+          color: $parentUsed;
           .part2 {
           }
         }
@@ -130,15 +130,7 @@ describe("remove-nested-unused-dollar-vars", () => {
     expect(
       await process(`
         $unused-global: 1;
-        .rule {
-          $unused-1: used;
-          $unused-2: 2 * $unused-1
-        }
       `)
-    ).toMatchInlineSnapshot(`
-      $unused-global: 1;
-      .rule {
-      }
-    `);
+    ).toMatchInlineSnapshot(`$unused-global: 1;`);
   });
 });

@@ -43,73 +43,76 @@ function recursivePromoteDollarDecls(dollarDecls, decl, rule) {
   }
 }
 
+function promoteNestingSelectorRules(parent, dollarDecls) {
+  let insertAfterTarget = parent;
+  parent.each((child) => {
+    if (child.type !== "rule") {
+      return;
+    }
+    const rule = child;
+    const selectors = getSelectors(rule.selector);
+
+    if (selectors.every((selector) => selector.startsWith("&-"))) {
+      rule.selector = combineSelectors(rule.parent.selector, rule.selector);
+
+      // Look in rule to see if it contains dollar vars declared in parent
+      rule.walkDecls((decl) => {
+        recursivePromoteDollarDecls(dollarDecls, decl, rule);
+      });
+
+      // https://postcss.org/api/#atrule-insertafter
+      rule.parent.parent.insertAfter(insertAfterTarget, rule);
+      insertAfterTarget = rule;
+    }
+  });
+}
+
+function shouldPromoteNestingSelectorRules(
+  rule,
+  strategy,
+  dollarDecls,
+  { Root }
+) {
+  const dryRunClone = rule.clone();
+  // create a parent to put the dry run into
+  new Root({}).append(dryRunClone);
+  const beforeSelectorList = getSelectorList(dryRunClone.parent);
+
+  promoteNestingSelectorRules(dryRunClone, dollarDecls);
+  const difference = compareSelectorLists(
+    beforeSelectorList,
+    getSelectorList(dryRunClone.parent)
+  );
+
+  switch (difference) {
+    case "NO_CHANGES":
+      return true;
+    case "SAFE_CHANGES":
+      return strategy === "cautions" || strategy === "aggressive";
+    case "UNSAFE_CHANGES":
+      return strategy === "aggressive";
+  }
+}
+
 module.exports = ({ strategy } = { strategy: "safe" }) => {
   // Work with options here
   return {
     postcssPlugin: "remove-dash-ampersand",
-    Root(root) {
-      const workingRoot = root.clone();
-      let lastParent = null;
-      let insertAfterTarget = null;
+    Root(root, postcss) {
+      const dollarDecls = new DollarDeclTree(root);
 
-      const dollarDecls = new DollarDeclTree(workingRoot);
-
-      workingRoot.walkRules((rule) => {
-        // produce rule's top level decls
-
-        if (rule.parent.type !== "rule") {
-          // ignore media queries for now
-          return;
-        }
-
-        const selectors = getSelectors(rule.selector);
-
-        if (selectors.every((selector) => selector.startsWith("&-"))) {
-          rule.selector = combineSelectors(rule.parent.selector, rule.selector);
-          if (lastParent !== rule.parent) {
-            insertAfterTarget = lastParent = rule.parent;
-          }
-
-          // Look in rule to see if it contains dollar vars declared in parent
-          rule.walkDecls((decl) => {
-            recursivePromoteDollarDecls(dollarDecls, decl, rule);
-          });
-
-          // https://postcss.org/api/#atrule-insertafter
-          rule.parent.parent.insertAfter(insertAfterTarget, rule);
-          insertAfterTarget = rule;
+      root.walkRules((rule) => {
+        if (
+          shouldPromoteNestingSelectorRules(
+            rule,
+            strategy,
+            dollarDecls,
+            postcss
+          )
+        ) {
+          promoteNestingSelectorRules(rule, dollarDecls);
         }
       });
-
-      switch (strategy) {
-        case "safe":
-          if (
-            compareSelectorLists(
-              getSelectorList(root),
-              getSelectorList(workingRoot)
-            ) === "NO_CHANGES"
-          ) {
-            root.removeAll();
-            root.append(workingRoot.nodes);
-          }
-          return;
-        case "cautious":
-          if (
-            compareSelectorLists(
-              getSelectorList(root),
-              getSelectorList(workingRoot)
-            ) !== "UNSAFE_CHANGES"
-          ) {
-            root.removeAll();
-            root.append(workingRoot.nodes);
-          }
-          return;
-
-        case "aggressive":
-          root.removeAll();
-          root.append(workingRoot.nodes);
-          return;
-      }
     },
   };
 };

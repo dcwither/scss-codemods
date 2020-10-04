@@ -402,5 +402,39 @@ describe("remove-dash-ampersand", () => {
         }
       `);
     });
+
+    it("should allow for partial migrations with the changes that don't change orders", async () => {
+      expect(
+        await process(`
+          .rule1 { 
+            &-part1 {}
+            &-part2 {}
+            .something-else1 {}
+            .something-else2 {} 
+          }
+          .rule2 { 
+            &-part1 {}
+            &-part2 {}
+          }
+        `)
+      ).toMatchInlineSnapshot(`
+        .rule1 {
+          &-part1 {
+          }
+          &-part2 {
+          }
+          .something-else1 {
+          }
+          .something-else2 {
+          }
+        }
+        .rule2 {
+        }
+        .rule2-part1 {
+        }
+        .rule2-part2 {
+        }
+      `);
+    });
   });
 });

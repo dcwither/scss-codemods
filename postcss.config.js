@@ -7,7 +7,7 @@ module.exports = {
   parser: "postcss-scss",
   plugins: [
     removeDashAmpersand({
-      strategy: argv.strategy,
+      reorder: argv.reorder,
     }),
     removeNestedUnusedDollarVars(),
     removeEmptyRules(),

@@ -69,7 +69,7 @@ function promoteNestingSelectorRules(parent, dollarDecls) {
 
 function shouldPromoteNestingSelectorRules(
   rule,
-  strategy,
+  reorder,
   dollarDecls,
   { Root }
 ) {
@@ -88,13 +88,13 @@ function shouldPromoteNestingSelectorRules(
     case "NO_CHANGES":
       return true;
     case "SAFE_CHANGES":
-      return strategy === "cautions" || strategy === "aggressive";
+      return reorder === "safe-reorder" || reorder === "unsafe-reorder";
     case "UNSAFE_CHANGES":
-      return strategy === "aggressive";
+      return reorder === "unsafe-reorder";
   }
 }
 
-module.exports = ({ strategy } = { strategy: "safe" }) => {
+module.exports = ({ reorder } = { reorder: "no-reorder" }) => {
   // Work with options here
   return {
     postcssPlugin: "remove-dash-ampersand",
@@ -103,12 +103,7 @@ module.exports = ({ strategy } = { strategy: "safe" }) => {
 
       root.walkRules((rule) => {
         if (
-          shouldPromoteNestingSelectorRules(
-            rule,
-            strategy,
-            dollarDecls,
-            postcss
-          )
+          shouldPromoteNestingSelectorRules(rule, reorder, dollarDecls, postcss)
         ) {
           promoteNestingSelectorRules(rule, dollarDecls);
         }

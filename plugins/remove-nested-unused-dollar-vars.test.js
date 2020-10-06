@@ -11,10 +11,7 @@ describe("remove-nested-unused-dollar-vars", () => {
           $unused: 1;
         }
       `)
-    ).toMatchInlineSnapshot(`
-      .rule {
-      }
-    `);
+    ).toMatchInlineSnapshot(`.rule {}`);
   });
 
   it("should ignore used dollar decls", async () => {
@@ -62,8 +59,7 @@ describe("remove-nested-unused-dollar-vars", () => {
     ).toMatchInlineSnapshot(`
       .rule {
         $used: name;
-        .#{$used} {
-        }
+        .#{$used} {}
       }
     `);
   });
@@ -76,10 +72,7 @@ describe("remove-nested-unused-dollar-vars", () => {
           $unused-2: 2 * $unused-1;
         }
       `)
-    ).toMatchInlineSnapshot(`
-      .rule {
-      }
-    `);
+    ).toMatchInlineSnapshot(`.rule {}`);
   });
 
   it("should remove unused duplicate decls", async () => {
@@ -101,8 +94,7 @@ describe("remove-nested-unused-dollar-vars", () => {
         $parentUsed: 1;
         .part1 {
           color: $parentUsed;
-          .part2 {
-          }
+          .part2 {}
         }
       }
     `);
@@ -120,8 +112,7 @@ describe("remove-nested-unused-dollar-vars", () => {
       `)
     ).toMatchInlineSnapshot(`
       .rule {
-        .part1 {
-        }
+        .part1 {}
       }
     `);
   });

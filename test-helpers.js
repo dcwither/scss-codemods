@@ -8,7 +8,10 @@ require("./utils/allow-inline-comments");
 expect.addSnapshotSerializer({
   test: (val) => val instanceof postcss.Result,
   print: (val) => {
-    return prettier.format(val.css, { parser: "scss" }).trim();
+    return prettier
+      .format(val.css, { parser: "scss" })
+      .replace(/\{\s*\}/g, "{}")
+      .trim();
   },
 });
 

@@ -11,10 +11,8 @@ function testCommonBehavior(process) {
           }
         `)
       ).toMatchInlineSnapshot(`
-        .rule {
-        }
-        .rule-part1 {
-        }
+        .rule {}
+        .rule-part1 {}
       `);
     });
 
@@ -27,12 +25,9 @@ function testCommonBehavior(process) {
           }
         `)
       ).toMatchInlineSnapshot(`
-        .rule {
-        }
-        .rule-extension1 {
-        }
-        .rule-extension2 {
-        }
+        .rule {}
+        .rule-extension1 {}
+        .rule-extension2 {}
       `);
     });
 
@@ -48,12 +43,9 @@ function testCommonBehavior(process) {
           }
         `)
       ).toMatchInlineSnapshot(`
-        .rule {
-        }
-        .rule-part1 {
-        }
-        .rule-part1-part2 {
-        }
+        .rule {}
+        .rule-part1 {}
+        .rule-part1-part2 {}
       `);
     });
 
@@ -69,16 +61,12 @@ function testCommonBehavior(process) {
           }
         `)
       ).toMatchInlineSnapshot(`
-        .rule1 {
-        }
-        .rule1-part1 {
-        }
+        .rule1 {}
+        .rule1-part1 {}
 
-        .rule2 {
-        }
+        .rule2 {}
 
-        .rule2-part2 {
-        }
+        .rule2-part2 {}
       `);
     });
 
@@ -93,8 +81,7 @@ function testCommonBehavior(process) {
       ).toMatchInlineSnapshot(`
         .rule {
           &-part1,
-          .something-else {
-          }
+          .something-else {}
         }
       `);
     });
@@ -109,11 +96,9 @@ function testCommonBehavior(process) {
         `)
       ).toMatchInlineSnapshot(`
         .rule1,
-        .rule2 {
-        }
+        .rule2 {}
         .rule1-part1,
-        .rule2-part1 {
-        }
+        .rule2-part1 {}
       `);
     });
 
@@ -126,11 +111,9 @@ function testCommonBehavior(process) {
           }
         `)
       ).toMatchInlineSnapshot(`
-        .rule {
-        }
+        .rule {}
         .rule-part1,
-        .rule-part2 {
-        }
+        .rule-part2 {}
       `);
     });
 
@@ -145,13 +128,11 @@ function testCommonBehavior(process) {
         `)
       ).toMatchInlineSnapshot(`
         .rule1,
-        .rule2 {
-        }
+        .rule2 {}
         .rule1-part1,
         .rule1-part2,
         .rule2-part1,
-        .rule2-part2 {
-        }
+        .rule2-part2 {}
       `);
     });
   });
@@ -167,8 +148,7 @@ function testCommonBehavior(process) {
       ).toMatchInlineSnapshot(`
         $blue: #0000ff;
 
-        .rule {
-        }
+        .rule {}
       `);
     });
 
@@ -190,8 +170,7 @@ function testCommonBehavior(process) {
         .rule {
           $blue: #0000ff;
         }
-        .rule-part1 {
-        }
+        .rule-part1 {}
         .rule-part1-part2 {
           color: $blue;
         }
@@ -229,8 +208,7 @@ function testCommonBehavior(process) {
         `)
       ).toMatchInlineSnapshot(`
         $blue: #0000ff;
-        .rule {
-        }
+        .rule {}
         .rule-part1 {
           color: $blue;
         }
@@ -258,8 +236,7 @@ function testCommonBehavior(process) {
 
         $var: 1;
         $blue: #0000ff;
-        .rule {
-        }
+        .rule {}
         .rule-part1 {
           color: $blue;
         }
@@ -289,8 +266,7 @@ function testCommonBehavior(process) {
         $var: 1;
         $blue: #0000ff;
         $light-blue: lighten($blue, 0.2);
-        .rule {
-        }
+        .rule {}
         .rule-part1 {
           background-color: $light-blue;
           color: $blue;
@@ -321,8 +297,7 @@ function testCommonBehavior(process) {
         $var: 1;
         $blue: #0000ff;
         $light-blue: lighten($blue, 0.2);
-        .rule {
-        }
+        .rule {}
         .rule-part1 {
           color: $light-blue;
         }
@@ -349,11 +324,9 @@ describe("remove-dash-ampersand", () => {
         `)
       ).toMatchInlineSnapshot(`
         .rule {
-          .something-else {
-          }
+          .something-else {}
         }
-        .rule-part1 {
-        }
+        .rule-part1 {}
       `);
     });
   });
@@ -383,24 +356,16 @@ describe("remove-dash-ampersand", () => {
         `)
       ).toMatchInlineSnapshot(`
         .rule1 {
-          &-part1 {
-          }
-          &-part2 {
-          }
-          .something-else1 {
-          }
-          .something-else2 {
-          }
+          &-part1 {}
+          &-part2 {}
+          .something-else1 {}
+          .something-else2 {}
         }
         .rule2 {
-          &-part1 {
-          }
-          &-part2 {
-          }
-          .something-else1 {
-          }
-          .something-else2 {
-          }
+          &-part1 {}
+          &-part2 {}
+          .something-else1 {}
+          .something-else2 {}
         }
       `);
     });
@@ -421,21 +386,14 @@ describe("remove-dash-ampersand", () => {
         `)
       ).toMatchInlineSnapshot(`
         .rule1 {
-          &-part1 {
-          }
-          &-part2 {
-          }
-          .something-else1 {
-          }
-          .something-else2 {
-          }
+          &-part1 {}
+          &-part2 {}
+          .something-else1 {}
+          .something-else2 {}
         }
-        .rule2 {
-        }
-        .rule2-part1 {
-        }
-        .rule2-part2 {
-        }
+        .rule2 {}
+        .rule2-part1 {}
+        .rule2-part2 {}
       `);
     });
   });

@@ -34,7 +34,9 @@ function recursivePromoteDollarDecls(dollarDecls, decl, rule) {
     const dollarDecl = dollarDecls.getDollarDecl(rule, dollarProp);
     if (dollarDecl && dollarDecl.parent === rule.parent) {
       if (!dollarDecls.canPromoteDecl(dollarDecl)) {
-        throw new Error(`cannot promote decl ${dollarDecl}`);
+        throw new Error(
+          `cannot promote decl ${dollarDecl} at ${dollarDecl.source.start.line}:${dollarDecl.source.start.column}`
+        );
       }
 
       insertDeclInPlace(dollarDecl.parent.parent, dollarDecl);

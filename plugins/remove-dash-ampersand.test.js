@@ -212,7 +212,7 @@ function testCommonBehavior(process) {
             }
           `)
       ).rejects.toMatchInlineSnapshot(
-        `[Error: cannot promote decl $blue: #0000BB]`
+        `[Error: cannot promote decl $blue: #0000BB at 5:15]`
       );
     });
 

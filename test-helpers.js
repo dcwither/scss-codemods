@@ -6,21 +6,19 @@ require("./utils/allow-inline-comments");
 
 // string snaphsots should not add the string output
 expect.addSnapshotSerializer({
-  test: (val) => typeof val === "string",
+  test: (val) => val instanceof postcss.Result,
   print: (val) => {
-    return val.trim();
+    return prettier.format(val.css, { parser: "scss" }).trim();
   },
 });
 
 function createProcessor(plugin) {
   const configured = postcss([plugin]);
-  return async (css) => {
-    const result = await configured.process(css, {
+  return (css) => {
+    return configured.process(css, {
       parser: postcssScss,
       from: "CSS",
     });
-
-    return prettier.format(result.css, { parser: "scss" });
   };
 }
 

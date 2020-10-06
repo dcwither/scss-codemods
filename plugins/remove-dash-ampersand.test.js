@@ -152,7 +152,7 @@ function testCommonBehavior(process) {
         .rule2-part1,
         .rule2-part2 {
         }
-        `);
+      `);
     });
   });
 

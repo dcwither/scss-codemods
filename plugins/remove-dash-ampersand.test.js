@@ -307,30 +307,6 @@ function testCommonBehavior(process) {
 }
 
 describe("remove-dash-ampersand", () => {
-  describe("unsafe-reorder", () => {
-    const process = createProcessor(
-      removeDashAmpersand({ reorder: "unsafe-reorder" })
-    );
-
-    testCommonBehavior(process);
-
-    it("should not affect rules without &-", async () => {
-      expect(
-        await process(`
-          .rule { 
-            &-part1 {} 
-            .something-else {} 
-          }
-        `)
-      ).toMatchInlineSnapshot(`
-        .rule {
-          .something-else {}
-        }
-        .rule-part1 {}
-      `);
-    });
-  });
-
   describe("no-reorder", () => {
     const process = createProcessor(
       removeDashAmpersand({ reorder: "no-reorder" })
@@ -396,5 +372,83 @@ describe("remove-dash-ampersand", () => {
         .rule2-part2 {}
       `);
     });
+  });
+
+  describe("safe-reorder", () => {
+    const process = createProcessor(
+      removeDashAmpersand({ reorder: "safe-reorder" })
+    );
+
+    testCommonBehavior(process);
+
+    it("should apply changes if reordered selectors have different specificity", async () => {
+      expect(
+        await process(`
+          .rule1 { 
+            &-part1 {} 
+            .something-else {} 
+          }
+          .rule2 { 
+            &-part1 .more.specificity {} 
+            .something-else {} 
+          }
+        `)
+      ).toMatchInlineSnapshot(`
+        .rule1 {
+          .something-else {}
+        }
+        .rule1-part1 {}
+        .rule2 {
+          .something-else {}
+        }
+        .rule2-part1 .more.specificity {}
+      `);
+    });
+
+    it("shouldn't apply changes if reordered selectors have same specificity", async () => {
+      expect(
+        await process(`
+          .rule1 { 
+            &-part1 .same-specificity {} 
+            .something-else {} 
+          }
+        `)
+      ).toMatchInlineSnapshot(`
+        .rule1 {
+          &-part1 .same-specificity {}
+          .something-else {}
+        }
+      `);
+    });
+  });
+
+  describe("unsafe-reorder", () => {
+    const process = createProcessor(
+      removeDashAmpersand({ reorder: "unsafe-reorder" })
+    );
+
+    testCommonBehavior(process);
+
+    it("should apply changes regardless selector reordering", async () => {
+      expect(
+        await process(`
+          .rule { 
+            &-part1 .same-specificity {} 
+            .something-else {} 
+          }
+        `)
+      ).toMatchInlineSnapshot(`
+        .rule {
+          .something-else {}
+        }
+        .rule-part1 .same-specificity {}
+      `);
+    });
+  });
+
+  describe("multiple runs", () => {
+    it.todo(
+      "executing transforms one after the other maintains relative order"
+    );
   });
 });

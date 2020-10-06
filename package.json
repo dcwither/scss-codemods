@@ -3,6 +3,9 @@
   "version": "0.0.0",
   "description": "SCSS codemods written with postcss plugins",
   "main": "postcss.config.js",
+  "bin": {
+    "scss-codemods": "cli.js"
+  },
   "scripts": {
     "test": "jest"
   },

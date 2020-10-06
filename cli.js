@@ -9,23 +9,31 @@ const config = require("./postcss.config.js");
 const processor = postcss(config.plugins);
 
 const argv = require("minimist")(process.argv.slice(2));
-const files = argv._;
+const [command, ...files] = argv._;
 
-const tasks = files.map((file) => {
-  const css = readFileSync(file, "utf8");
-  return processor
-    .process(css, {
-      // always replace
-      from: file,
-      to: file,
-      parser: config.parser,
-      map: false,
-    })
-    .then((result) => {
-      writeFileSync(file, result.css);
-      console.log(file);
+let tasks = [];
+switch (command) {
+  case "union-class-name":
+    tasks = files.map((file) => {
+      const css = readFileSync(file, "utf8");
+      return processor
+        .process(css, {
+          // always replace
+          from: file,
+          to: file,
+          parser: config.parser,
+          map: false,
+        })
+        .then((result) => {
+          writeFileSync(file, result.css);
+          console.log(file);
+        });
     });
-});
+  default:
+    console.log(
+      "sorry, right now we only have one command - unwind-nested-union-classsname :)"
+    );
+}
 
 Promise.all(tasks).catch((error) => {
   console.trace(error);

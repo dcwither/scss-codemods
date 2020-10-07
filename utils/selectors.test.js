@@ -66,91 +66,85 @@ describe("selectors", () => {
       expect(compareSelectorLists([], [])).toEqual("NO_CHANGES");
     });
 
-    it("should identify no changes", () => {
+    it("should identify no changes", async () => {
       expect(
         compareSelectorLists(
-          [".rule1", ".rule1 .something-else1", ".rule1-part1"],
-          [".rule1", ".rule1 .something-else1", ".rule1-part1"]
+          await selectorsFromSCSS(`
+            .rule1 { 
+              &-part1 {}
+              &-part2 {}
+            }
+          `),
+          await selectorsFromSCSS(`
+            .rule1 {}
+            .rule1-part1 {}
+            .rule1-part2 {}
+          `)
         )
       ).toEqual("NO_CHANGES");
     });
 
-    it("should identify safe changes in simple list", () => {
+    it("should identify safe changes in simple list", async () => {
       expect(
         compareSelectorLists(
-          [".rule1", ".rule1-part1", ".rule1 .something-else1"],
-          [".rule1", ".rule1 .something-else1", ".rule1-part1"]
+          await selectorsFromSCSS(`
+            .rule1 { 
+              &-part1 {}
+              .something-else {}
+            }
+          `),
+          await selectorsFromSCSS(`
+            .rule1 {
+              .something-else {}
+            }
+            .rule1-part1 {}
+          `)
         )
       ).toEqual("SAFE_CHANGES");
     });
 
-    it("should identify safe changes in complex list", () => {
+    it("should identify safe changes in complex list", async () => {
       expect(
         compareSelectorLists(
-          [
-            ".rule1",
-            ".rule1-part1",
-            ".rule1-part2",
-            ".rule1 .something-else1",
-            ".rule1 .something-else2",
-            ".rule2",
-            ".rule2-part1",
-            ".rule2-part2",
-            ".rule2 .something-else1",
-            ".rule2 .something-else2",
-          ],
-          [
-            ".rule1",
-            ".rule1 .something-else1",
-            ".rule1 .something-else2",
-            ".rule1-part1",
-            ".rule1-part2",
-            ".rule2",
-            ".rule2 .something-else1",
-            ".rule2 .something-else2",
-            ".rule2-part1",
-            ".rule2-part2",
-          ]
+          await selectorsFromSCSS(`
+            .rule1 { 
+              &-part1 {} 
+              .something-else {} 
+            }
+            .rule2 { 
+              &-part1 .more.specificity {} 
+              .something-else {} 
+            }
+          `),
+          await selectorsFromSCSS(`
+            .rule1 {
+              .something-else {}
+            }
+            .rule1-part1 {}
+            .rule2 {
+              .something-else {}
+            }
+            .rule2-part1 .more.specificity {}
+          `)
         )
       ).toEqual("SAFE_CHANGES");
     });
 
-    it("should identify unsafe changes in simple list", () => {
+    it("should identify unsafe changes in simple list", async () => {
       expect(
         compareSelectorLists(
-          [".rule1", ".rule1-part1 .rule", ".rule1 .something-else1"],
-          [".rule1", ".rule1 .something-else1", ".rule1-part1 .rule"]
-        )
-      ).toEqual("UNSAFE_CHANGES");
-    });
-
-    it("should identify unsafe changes in complex list", () => {
-      expect(
-        compareSelectorLists(
-          [
-            ".rule1",
-            ".rule1-part1 .rule",
-            ".rule1-part2",
-            ".rule1 .something-else1",
-            ".rule1 .something-else2",
-            ".rule2",
-            ".rule2-part1",
-            ".rule2-part2",
-            ".rule2 .something-else1",
-            ".rule2 .something-else2",
-          ],
-          [
-            ".rule1",
-            ".rule1 .something-else1",
-            ".rule1 .something-else2",
-            ".rule1-part1 .rule",
-            ".rule1-part2",
-            ".rule2",
-            ".rule2 .something-else1",
-            ".rule2 .something-else2",
-            ".rule2-part1",
-            ".rule2-part2",
-          ]
+          await selectorsFromSCSS(`
+            .rule1 { 
+              &-part1 .same-specificity {}
+              .something-else {}
+            }
+          `),
+          await selectorsFromSCSS(`
+            .rule1 {
+              .something-else {}
+            }
+            .rule1-part1 .same-specificity {}
+          `)
         )
       ).toEqual("UNSAFE_CHANGES");
     });

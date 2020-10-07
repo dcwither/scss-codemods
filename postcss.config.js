@@ -9,6 +9,8 @@ module.exports = {
   plugins: [
     removeDashAmpersand({
       reorder: argv.reorder,
+      promoteDollarVars: argv["promote-dollar-vars"],
+      namespaceDollarVars: argv["namespace-dollar-vars"],
     }),
     removeNestedUnusedDollarVars(),
     removeEmptyRules(),

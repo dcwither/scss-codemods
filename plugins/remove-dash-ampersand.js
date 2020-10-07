@@ -6,6 +6,9 @@ const {
   getSelectors,
 } = require("../utils/selectors");
 
+class PromoteGlobalError extends Error {}
+class DuplicateVarInScopeError extends Error {}
+
 function shouldGoAfter(decl, node) {
   return (
     node.type === "comment" ||
@@ -29,23 +32,30 @@ function insertDeclInPlace(parent, decl) {
   parent.insertBefore(beforeNode, decl);
 }
 
-function recursivePromoteDollarDecls(dollarDecls, decl, rule) {
+function recursivePromoteDollarDecls(dollarDecls, decl, rule, opts) {
   for (const dollarProp of dollarDecls.props) {
     const dollarDecl = dollarDecls.getDollarDecl(rule, dollarProp);
     if (dollarDecl && dollarDecl.parent === rule.parent) {
       if (!dollarDecls.canPromoteDecl(dollarDecl)) {
-        throw new Error(
+        throw new DuplicateVarInScopeError(
           `Cannot promote decl ${dollarDecl} at ${dollarDecl.source.start.line}:${dollarDecl.source.start.column}`
         );
       }
 
+      if (
+        dollarDecl.parent.parent.type === "root" &&
+        opts.promoteDollarVars === "no-global"
+      ) {
+        throw new PromoteGlobalError("cannot promote to global");
+      }
+
       insertDeclInPlace(dollarDecl.parent.parent, dollarDecl);
-      recursivePromoteDollarDecls(dollarDecls, dollarDecl, rule);
+      recursivePromoteDollarDecls(dollarDecls, dollarDecl, rule, opts);
     }
   }
 }
 
-function promoteNestingSelectorRules(parent, dollarDecls) {
+function promoteNestingSelectorRules(parent, dollarDecls, opts) {
   let insertAfterTarget = parent;
   let toPromote = [];
   parent.each((child) => {
@@ -63,34 +73,35 @@ function promoteNestingSelectorRules(parent, dollarDecls) {
     if (selectors.every((selector) => selector.startsWith("&-"))) {
       rule.selector = combineSelectors(rule.parent.selector, rule.selector);
 
-      // Look in rule to see if it contains dollar vars declared in parent
-      rule.walkDecls((decl) => {
-        recursivePromoteDollarDecls(dollarDecls, decl, rule);
-      });
+      try {
+        // Look in rule to see if it contains dollar vars declared in parent
+        rule.walkDecls((decl) => {
+          recursivePromoteDollarDecls(dollarDecls, decl, rule, opts);
+        });
 
-      toPromote.push(rule);
-      for (const promoteNode of toPromote) {
-        // https://postcss.org/api/#atrule-insertafter
-        parent.parent.insertAfter(insertAfterTarget, promoteNode);
-        insertAfterTarget = promoteNode;
+        toPromote.push(rule);
+        for (const promoteNode of toPromote) {
+          // https://postcss.org/api/#atrule-insertafter
+          parent.parent.insertAfter(insertAfterTarget, promoteNode);
+          insertAfterTarget = promoteNode;
+        }
+      } catch (e) {
+        if (!(e instanceof PromoteGlobalError)) {
+          throw e;
+        }
       }
     }
     toPromote = [];
   });
 }
 
-function shouldPromoteNestingSelectorRules(
-  rule,
-  reorder,
-  dollarDecls,
-  { Root }
-) {
+function shouldPromoteNestingSelectorRules(rule, dollarDecls, { Root }, opts) {
   const dryRunClone = rule.clone();
   // create a parent to put the dry run into
   new Root({}).append(dryRunClone);
   const beforeSelectorList = getSelectorList(dryRunClone.parent);
 
-  promoteNestingSelectorRules(dryRunClone, dollarDecls);
+  promoteNestingSelectorRules(dryRunClone, dollarDecls, opts);
   const difference = compareSelectorLists(
     beforeSelectorList,
     getSelectorList(dryRunClone.parent)
@@ -100,13 +111,22 @@ function shouldPromoteNestingSelectorRules(
     case "NO_CHANGES":
       return true;
     case "SAFE_CHANGES":
-      return reorder === "safe-reorder" || reorder === "unsafe-reorder";
+      return (
+        opts.reorder === "safe-reorder" || opts.reorder === "unsafe-reorder"
+      );
     case "UNSAFE_CHANGES":
-      return reorder === "unsafe-reorder";
+      return opts.reorder === "unsafe-reorder";
   }
 }
 
-module.exports = ({ reorder } = { reorder: "no-reorder" }) => {
+module.exports = (opts) => {
+  opts = {
+    // default values
+    reorder: "no-reorder",
+    promoteDollarVars: "global",
+    namespaceDollarVars: "no-namespace",
+    ...opts,
+  };
   // Work with options here
   return {
     postcssPlugin: "remove-dash-ampersand",
@@ -115,9 +135,9 @@ module.exports = ({ reorder } = { reorder: "no-reorder" }) => {
 
       root.walkRules((rule) => {
         if (
-          shouldPromoteNestingSelectorRules(rule, reorder, dollarDecls, postcss)
+          shouldPromoteNestingSelectorRules(rule, dollarDecls, postcss, opts)
         ) {
-          promoteNestingSelectorRules(rule, dollarDecls);
+          promoteNestingSelectorRules(rule, dollarDecls, opts);
         }
       });
     },

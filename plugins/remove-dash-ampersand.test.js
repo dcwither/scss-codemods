@@ -360,7 +360,7 @@ function testCommonBehavior(process) {
 }
 
 describe("remove-dash-ampersand", () => {
-  describe("no-reorder", () => {
+  describe("reorder: no-reorder", () => {
     const process = createProcessor(
       removeDashAmpersand({ reorder: "no-reorder" })
     );
@@ -427,7 +427,7 @@ describe("remove-dash-ampersand", () => {
     });
   });
 
-  describe("safe-reorder", () => {
+  describe("reorder: safe-reorder", () => {
     const process = createProcessor(
       removeDashAmpersand({ reorder: "safe-reorder" })
     );
@@ -475,7 +475,7 @@ describe("remove-dash-ampersand", () => {
     });
   });
 
-  describe("unsafe-reorder", () => {
+  describe("reorder: unsafe-reorder", () => {
     const process = createProcessor(
       removeDashAmpersand({ reorder: "unsafe-reorder" })
     );
@@ -495,6 +495,32 @@ describe("remove-dash-ampersand", () => {
           .something-else {}
         }
         .rule-part1 .same-specificity {}
+      `);
+    });
+  });
+
+  describe("promote-dollar-vars: no-global", () => {
+    const process = createProcessor(
+      removeDashAmpersand({ promoteDollarVars: "no-global" })
+    );
+
+    it("won't promote rules with dollar vars that will be promoted to global", async () => {
+      expect(
+        await process(`
+          .rule { 
+            $var: blue;
+            &-part1 {
+              color: $var;
+            } 
+          }
+        `)
+      ).toMatchInlineSnapshot(`
+        .rule {
+          $var: blue;
+          .rule-part1 {
+            color: $var;
+          }
+        }
       `);
     });
   });

@@ -44,7 +44,7 @@ Determines the freedom provided to the codemod to reorder rules to better match 
 
 *Recommended that you test the resulting css thoroughly, especially with the `unsafe-reorder` option.*
 
-#### Not Implemented: `--promote-dollar-vars`
+#### `--promote-dollar-vars`
 
 Determines how dollar vars will be promoted (default behavior: `global`). **not implemented**
 

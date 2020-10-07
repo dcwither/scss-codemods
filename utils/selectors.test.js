@@ -103,6 +103,27 @@ describe("selectors", () => {
       ).toEqual("SAFE_CHANGES");
     });
 
+    it("should identify safe changes with interleaved parts", async () => {
+      expect(
+        compareSelectorLists(
+          await selectorsFromSCSS(`
+            .rule1 { 
+              &-part1 {}
+              .something-else {}
+              &-part2 {}
+            }
+          `),
+          await selectorsFromSCSS(`
+            .rule1 {
+              .something-else {}
+            }
+            .rule1-part1 {}
+            .rule1-part2 {}
+          `)
+        )
+      ).toEqual("SAFE_CHANGES");
+    });
+
     it("should identify safe changes in complex list", async () => {
       expect(
         compareSelectorLists(
@@ -144,6 +165,29 @@ describe("selectors", () => {
               .something-else {}
             }
             .rule1-part1 .same-specificity {}
+          `)
+        )
+      ).toEqual("UNSAFE_CHANGES");
+    });
+
+    it("should identify unsafe changes with interleaved parts", async () => {
+      expect(
+        compareSelectorLists(
+          await selectorsFromSCSS(`
+            .rule1 { 
+              &-part1 {}
+              .something-else1 {}
+              &-part2 .same-specificity {}
+              .something-else2 {}
+            }
+          `),
+          await selectorsFromSCSS(`
+            .rule1 {
+              .something-else1 {}
+              .something-else2 {}
+            }
+            .rule1-part1 {}
+            .rule1-part2 .same-specificity {}
           `)
         )
       ).toEqual("UNSAFE_CHANGES");

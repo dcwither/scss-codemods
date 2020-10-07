@@ -44,35 +44,42 @@ function getSelectorList(root) {
   return selectors;
 }
 
+function getSkipped(precedingBefore, precedingAfter) {
+  const skipped = [];
+  for (const selector of precedingAfter) {
+    if (!precedingBefore.includes(selector)) {
+      skipped.push(selector);
+    }
+  }
+  return skipped;
+}
+
 function compareSelectorLists(before, after) {
   if (before.join("\n") === after.join("\n")) {
     return "NO_CHANGES";
   }
 
-  // console.log(before, after);
-  let prevDelta = 0;
-  let skippedSelectors = [];
+  const lastSeen = {};
+
   for (let beforeIndex = 0; beforeIndex < before.length; beforeIndex++) {
     const selector = before[beforeIndex];
-    const delta = after.indexOf(selector, beforeIndex) - beforeIndex;
+    // track when the selector was last seen in the after array to make sure we don't repeat
+    const afterIndex = after.indexOf(selector, lastSeen[selector] + 1 || 0);
+    lastSeen[selector] = afterIndex;
 
-    if (delta !== prevDelta) {
-      if (delta > 0) {
-        prevDelta = delta;
-        skippedSelectors = after.slice(beforeIndex, beforeIndex + delta);
-      } else {
-        prevDelta = 0;
-        skippedSelectors = [];
-      }
-    }
-    if (prevDelta > 0) {
+    const delta = afterIndex - beforeIndex;
+    if (delta > 0) {
+      const skippedSelectors = getSkipped(
+        before.slice(0, beforeIndex + 1),
+        after.slice(0, afterIndex + 1)
+      );
       // Keep for now: debugging logs for unsafe change detection
       // console.log(`${selector} skipped ${delta} rules: ${skippedSelectors}`);
       for (const skippedSelector of skippedSelectors) {
         // moved selector has the same specificity as a skipped selector
         if (compare(selector, skippedSelector) === 0) {
           // console.log(
-          //   `"${movedSelector}" might have made a bad move past "${skippedSelectors} with the same specificity"`
+          //   `"${selector}" might have made a bad move past "${skippedSelectors} with the same specificity"`
           // );
           return "UNSAFE_CHANGES";
         }

@@ -137,6 +137,59 @@ function testCommonBehavior(process) {
     });
   });
 
+  describe("comments", () => {
+    it("should promote comments immediately preceding promoted rules", async () => {
+      expect(
+        await process(`
+          .rule {
+            // preceding comment
+            // second preceding comment
+            &-part {}
+          }
+        `)
+      ).toMatchInlineSnapshot(`
+        .rule {}
+        // preceding comment
+        // second preceding comment
+        .rule-part {}
+      `);
+    });
+
+    it("shouldn't promote comments preceding other rules", async () => {
+      expect(
+        await process(`
+          .rule {
+            // indirectly preceding comment
+            .something else {}
+            &-part {}
+          }
+        `)
+      ).toMatchInlineSnapshot(`
+        .rule {
+          // indirectly preceding comment
+          .something else {}
+        }
+        .rule-part {}
+      `);
+    });
+
+    it("shouldn't promote comments following promoted rules", async () => {
+      expect(
+        await process(`
+          .rule {
+            &-part {}
+            // following comment
+          }
+        `)
+      ).toMatchInlineSnapshot(`
+        .rule {
+          // following comment
+        }
+        .rule-part {}
+      `);
+    });
+  });
+
   describe("dollar vars", () => {
     it("should leave root variables where they are", async () => {
       expect(
@@ -191,7 +244,7 @@ function testCommonBehavior(process) {
             }
           `)
       ).rejects.toMatchInlineSnapshot(
-        `[Error: cannot promote decl $blue: #0000BB at 5:15]`
+        `[Error: Cannot promote decl $blue: #0000BB at 5:15]`
       );
     });
 

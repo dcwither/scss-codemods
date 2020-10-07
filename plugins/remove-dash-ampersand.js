@@ -35,7 +35,7 @@ function recursivePromoteDollarDecls(dollarDecls, decl, rule) {
     if (dollarDecl && dollarDecl.parent === rule.parent) {
       if (!dollarDecls.canPromoteDecl(dollarDecl)) {
         throw new Error(
-          `cannot promote decl ${dollarDecl} at ${dollarDecl.source.start.line}:${dollarDecl.source.start.column}`
+          `Cannot promote decl ${dollarDecl} at ${dollarDecl.source.start.line}:${dollarDecl.source.start.column}`
         );
       }
 
@@ -47,10 +47,16 @@ function recursivePromoteDollarDecls(dollarDecls, decl, rule) {
 
 function promoteNestingSelectorRules(parent, dollarDecls) {
   let insertAfterTarget = parent;
+  let toPromote = [];
   parent.each((child) => {
-    if (child.type !== "rule") {
+    if (child.type === "comment") {
+      toPromote.push(child);
+      return;
+    } else if (child.type !== "rule") {
+      toPromote = [];
       return;
     }
+
     const rule = child;
     const selectors = getSelectors(rule.selector);
 
@@ -62,10 +68,14 @@ function promoteNestingSelectorRules(parent, dollarDecls) {
         recursivePromoteDollarDecls(dollarDecls, decl, rule);
       });
 
-      // https://postcss.org/api/#atrule-insertafter
-      rule.parent.parent.insertAfter(insertAfterTarget, rule);
-      insertAfterTarget = rule;
+      toPromote.push(rule);
+      for (const promoteNode of toPromote) {
+        // https://postcss.org/api/#atrule-insertafter
+        parent.parent.insertAfter(insertAfterTarget, promoteNode);
+        insertAfterTarget = promoteNode;
+      }
     }
+    toPromote = [];
   });
 }
 

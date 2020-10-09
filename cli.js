@@ -22,20 +22,19 @@ require("yargs")
       yargs
         .option("r", {
           alias: "reorder",
-          describe: "strategy for reordering rules ",
+          describe: "reorder promoted rules rules ",
           choices: ["no-reorder", "safe-reorder", "unsafe-reorder"],
           default: "no-reorder",
         })
         .option("p", {
           alias: "promote-dollar-vars",
-          describe: "determines whether to promote dollar vars to global scope",
+          describe: "promote dollar vars to global scope",
           choices: ["no-global", "global"],
           default: "global",
         })
         .option("n", {
           alias: "namespace-dollar-vars",
-          describe:
-            "determines whether to namespace dollar vars that are promoted with rules",
+          describe: "namespace promoted dollar vars",
           choices: [
             "no-namespace",
             "namespace-when-necessary",

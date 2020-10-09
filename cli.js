@@ -4,38 +4,77 @@
 const { writeFileSync, readFileSync } = require("fs");
 
 const postcss = require("postcss");
+const postcssScss = require("postcss-scss");
 require("./utils/allow-inline-comments");
-const config = require("./postcss.config.js");
-const processor = postcss(config.plugins);
 
-const argv = require("minimist")(process.argv.slice(2));
-const [command, ...files] = argv._;
+// plugins
+const removeDashAmpersand = require("./plugins/remove-dash-ampersand");
+const removeEmptyRules = require("./plugins/remove-empty-rules");
+const removeNestedUnusedDollarVars = require("./plugins/remove-nested-unused-dollar-vars");
 
-let tasks = [];
-switch (command) {
-  case "union-class-name":
-    tasks = files.map((file) => {
-      const css = readFileSync(file, "utf8");
-      return processor
-        .process(css, {
-          // always replace
-          from: file,
-          to: file,
-          parser: config.parser,
-          map: false,
+require("yargs")
+  .scriptName("scss-codemods")
+  .usage("$0 <cmd> <files...>")
+  .command(
+    "union-class-name <files...>",
+    "Promotes union class rules to the parent level to improve grepability",
+    (yargs) => {
+      yargs
+        .option("r", {
+          alias: "reorder",
+          describe: "strategy for reordering rules ",
+          choices: ["no-reorder", "safe-reorder", "unsafe-reorder"],
+          default: "no-reorder",
         })
-        .then((result) => {
-          writeFileSync(file, result.css);
-          console.log(file);
+        .option("p", {
+          alias: "promote-dollar-vars",
+          describe: "determines whether to promote dollar vars to global scope",
+          choices: ["no-global", "global"],
+          default: "global",
+        })
+        .option("n", {
+          alias: "namespace-dollar-vars",
+          describe:
+            "determines whether to namespace dollar vars that are promoted with rules",
+          choices: [
+            "no-namespace",
+            "namespace-when-necessary",
+            "namespace-always",
+          ],
+          default: "no-namespace",
         });
-    });
-  default:
-    console.log(
-      "sorry, right now we only have one command - unwind-nested-union-classsname :)"
-    );
-}
-
-Promise.all(tasks).catch((error) => {
-  console.trace(error);
-  exit(1);
-});
+    },
+    (argv) => {
+      const processor = postcss([
+        removeDashAmpersand({
+          reorder: argv.reorder,
+          promoteDollarVars: argv.promoteDollarVars,
+          namespaceDollarVars: argv.namespaceDollarVars,
+        }),
+        removeNestedUnusedDollarVars(),
+        removeEmptyRules(),
+      ]);
+      Promise.all(
+        argv.files.map((file) => {
+          const css = readFileSync(file, "utf8");
+          return processor
+            .process(css, {
+              // always replace
+              from: file,
+              to: file,
+              parser: postcssScss,
+              map: false,
+            })
+            .then((result) => {
+              writeFileSync(file, result.css);
+              console.log(file);
+            });
+        })
+      ).catch((error) => {
+        console.trace(error);
+        exit(1);
+      });
+    }
+  )
+  .demandCommand(1)
+  .help().argv;

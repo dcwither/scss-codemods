@@ -33,6 +33,7 @@
     "minimist": "^1.2.5",
     "postcss": "^8.0.9",
     "postcss-scss": "^3.0.1",
-    "specificity": "^0.4.1"
+    "specificity": "^0.4.1",
+    "yargs": "^16.0.3"
   }
 }

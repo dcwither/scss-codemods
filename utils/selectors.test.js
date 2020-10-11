@@ -1,5 +1,5 @@
 const { getSelectorList, compareSelectorLists } = require("./selectors");
-const { createProcessor } = require("../test-helpers");
+const { createProcessor } = require("../utils/postcss");
 
 const process = createProcessor({
   postcssPlugin: "identity",

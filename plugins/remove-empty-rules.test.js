@@ -1,4 +1,4 @@
-const { createProcessor } = require("../test-helpers");
+const { createProcessor } = require("../utils/postcss");
 const removeEmptyRules = require("./remove-empty-rules");
 
 const process = createProcessor(removeEmptyRules());

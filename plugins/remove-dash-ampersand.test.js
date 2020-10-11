@@ -1,4 +1,4 @@
-const { createProcessor } = require("../test-helpers");
+const { createProcessor } = require("../utils/postcss");
 const removeDashAmpersand = require("./remove-dash-ampersand");
 
 function testCommonBehavior(process) {

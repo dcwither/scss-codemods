@@ -36,6 +36,7 @@ module.exports = (opts) => {
       }
     }
     // http://zschuessler.github.io/DeltaE/learn/
+    console.log("threshold", opts.threshold);
     if (
       lowestDeltaE < opts.threshold ||
       withinEpsilon(lowestDeltaE - opts.threshold)

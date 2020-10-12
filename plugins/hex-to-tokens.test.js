@@ -34,6 +34,20 @@ describe("hex-to-tokens", () => {
       `);
     });
 
+    it("should transform a multiple colors in a single value", async () => {
+      expect(
+        await process(`
+          html {
+            color: #000000 #000;
+          }
+        `)
+      ).toMatchInlineSnapshot(`
+        html {
+          color: $black $black;
+        }
+      `);
+    });
+
     it("should match colors across hex lengths", async () => {
       expect(
         await process(`

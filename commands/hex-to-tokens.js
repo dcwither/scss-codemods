@@ -23,19 +23,19 @@ exports.builder = {
   },
 };
 
-exports.check = (argv) => {
+exports.handler = (argv) => {
+  // validate inputs
   if (argv.threshold < 0 || argv.threshold > 100) {
     throw new Error("threshold must be within the range [0, 100]");
   }
-};
 
-exports.handler = (argv) => {
   const config = JSON.parse(readFileSync(argv.config, "utf8"));
   processFiles(
     argv.files,
     createProcessor([
       hexToTokens({
         config: config,
+        threshold: argv.threshold,
       }),
     ])
   );

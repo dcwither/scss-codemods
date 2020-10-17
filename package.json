@@ -44,6 +44,7 @@
     "color-convert": "^2.0.1",
     "delta-e": "0.0.8",
     "minimist": "^1.2.5",
+    "npmlog": "^4.1.2",
     "postcss": "^8.0.9",
     "postcss-scss": "^3.0.1",
     "specificity": "^0.4.1",

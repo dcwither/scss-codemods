@@ -83,7 +83,7 @@ module.exports = class DollarDeclTree {
       }
     });
 
-    this.root.walkRules(/\#\{\$/, (rule) => {
+    this.root.walkRules(/#\{\$/, (rule) => {
       // are any of the dollar decls interpolated into rules
       if (
         rule.selector.includes(`#{${dollarDecl.prop}`) &&
@@ -100,7 +100,7 @@ module.exports = class DollarDeclTree {
     let removed;
     do {
       removed = false;
-      for (const [prop, decl] of this.entries) {
+      for (const [, decl] of this.entries) {
         if (
           decl.parent &&
           decl.parent !== this.root &&

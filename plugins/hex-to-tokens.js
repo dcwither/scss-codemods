@@ -51,11 +51,7 @@ module.exports = (opts) => {
     return str.replace(
       /#[0-9a-f][0-9a-f][0-9a-f]([0-9a-f][0-9a-f][0-9a-f])?/gi,
       (match) => {
-        // TODO: if performance is an issue, can transform to a map
-
         return mapHexColorToBestMatch(match);
-
-        return match;
       }
     );
   }

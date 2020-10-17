@@ -11,4 +11,5 @@ require("yargs")
   .usage("$0 <cmd> <files...>")
   .commandDir("commands")
   .demandCommand(1)
-  .help().argv;
+  .help()
+  .argv();

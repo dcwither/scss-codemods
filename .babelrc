@@ -1,0 +1,12 @@
+{
+  "presets": ["@babel/preset-typescript"],
+  "plugins": [
+    "@babel/plugin-transform-modules-commonjs",
+    [
+      "module-resolver",
+      {
+        "root": ["./src"]
+      }
+    ]
+  ]
+}

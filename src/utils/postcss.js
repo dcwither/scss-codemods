@@ -25,6 +25,6 @@ exports.processFiles = function processFiles(files, process) {
     })
   ).catch((error) => {
     log.error(error);
-    exit(1);
+    process.exit(1);
   });
 };

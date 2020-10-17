@@ -7,9 +7,11 @@
     "scss-codemods": "cli.js"
   },
   "scripts": {
-    "build": "tsc --project .",
+    "build": "babel src -d build --extensions .ts,.js",
+    "lint": "eslint --ignore-path=.gitignore .",
+    "start": "npm run build -- --watch",
     "test": "jest",
-    "lint": "eslint --ignore-path=.gitignore ."
+    "typecheck": "tsc --project . --noEmit"
   },
   "repository": {
     "type": "git",
@@ -28,9 +30,14 @@
   },
   "homepage": "https://github.com/dcwither/scss-codemods#readme",
   "devDependencies": {
+    "@babel/cli": "^7.12.1",
+    "@babel/core": "^7.12.3",
+    "@babel/plugin-transform-modules-commonjs": "^7.12.1",
+    "@babel/preset-typescript": "^7.12.1",
     "@types/npmlog": "^4.1.2",
     "@typescript-eslint/eslint-plugin": "^4.4.1",
     "@typescript-eslint/parser": "^4.4.1",
+    "babel-plugin-module-resolver": "^4.0.0",
     "eslint": "^7.11.0",
     "eslint-config-prettier": "^6.13.0",
     "eslint-config-standard": "^14.1.1",

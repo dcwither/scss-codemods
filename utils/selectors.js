@@ -1,4 +1,5 @@
 const { compare } = require("specificity");
+const log = require("npmlog");
 
 function formatSelector(selector) {
   return selector.replace(/\s\s*/g, " ").trim();
@@ -74,13 +75,13 @@ function compareSelectorLists(before, after) {
         after.slice(0, afterIndex + 1)
       );
       // Keep for now: debugging logs for unsafe change detection
-      // console.log(`${selector} skipped ${delta} rules: ${skippedSelectors}`);
+      log.silly(`${selector} skipped ${delta} rules: ${skippedSelectors}`);
       for (const skippedSelector of skippedSelectors) {
         // moved selector has the same specificity as a skipped selector
         if (compare(selector, skippedSelector) === 0) {
-          // console.log(
-          //   `"${selector}" might have made a bad move past "${skippedSelectors} with the same specificity"`
-          // );
+          log.silly(
+            `"${selector}" might have made a bad move past "${skippedSelectors} with the same specificity"`
+          );
           return "UNSAFE_CHANGES";
         }
       }

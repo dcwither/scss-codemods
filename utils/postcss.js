@@ -2,6 +2,7 @@ const { writeFileSync, readFileSync } = require("fs");
 
 const postcss = require("postcss");
 const postcssScss = require("postcss-scss");
+const log = require("npmlog");
 
 exports.createProcessor = function createProcessor(plugins) {
   const configured = postcss(plugins);
@@ -19,11 +20,11 @@ exports.processFiles = function processFiles(files, process) {
       const css = readFileSync(file, "utf8");
       return process(css).then((result) => {
         writeFileSync(file, result.css);
-        console.log(file);
+        log.info(file);
       });
     })
   ).catch((error) => {
-    console.trace(error);
+    log.error(error);
     exit(1);
   });
 };

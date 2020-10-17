@@ -2,7 +2,7 @@
 const log = require("npmlog");
 
 // stripped down version of postcss-cli that allows running this directly, and enables the inline comment monkey patch
-require("./utils/allow-inline-comments");
+require("./src/utils/allow-inline-comments");
 
 // eslint-disable-next-line no-unused-expressions
 require("yargs")
@@ -18,6 +18,6 @@ require("yargs")
   })
   .scriptName("scss-codemods")
   .usage("$0 <cmd> <files...>")
-  .commandDir("commands")
+  .commandDir("./src/commands")
   .demandCommand(1)
   .help().argv;

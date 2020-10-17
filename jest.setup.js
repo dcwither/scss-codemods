@@ -1,7 +1,7 @@
 const postcss = require("postcss");
 const prettier = require("prettier");
 
-require("./utils/allow-inline-comments");
+require("./src/utils/allow-inline-comments");
 
 // string snaphsots should not add the string output
 expect.addSnapshotSerializer({

@@ -7,7 +7,7 @@
     "scss-codemods": "cli.js"
   },
   "scripts": {
-    "build": "babel src -d build --extensions .ts,.js",
+    "build": "babel src --out-dir build --extensions .ts,.js --no-copy-ignored --ignore src/**/*.test.js,src/**/*.test.ts,src/**/*.d.ts",
     "lint": "eslint --ignore-path=.gitignore .",
     "start": "npm run build -- --watch",
     "test": "jest",

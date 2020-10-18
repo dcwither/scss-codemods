@@ -1,7 +1,7 @@
-import hexToTokens from "../plugins/hex-to-tokens";
-import { readFileSync } from "fs";
+import { createProcessor, processFiles } from "utils/postcss";
 
-const { createProcessor, processFiles } = require("../utils/postcss");
+import hexToTokens from "plugins/hex-to-tokens";
+import { readFileSync } from "fs";
 
 export const command = "hex-to-tokens <files...>";
 

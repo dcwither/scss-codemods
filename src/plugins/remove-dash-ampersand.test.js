@@ -1,4 +1,4 @@
-import { createProcessor } from "../utils/postcss";
+import { createProcessor } from "utils/postcss";
 import removeDashAmpersand from "./remove-dash-ampersand";
 
 function testCommonBehavior(process) {

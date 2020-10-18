@@ -1,4 +1,4 @@
-import DollarDeclTree from "../utils/dollar-decl-tree";
+import DollarDeclTree from "utils/dollar-decl-tree";
 
 export default (options = {}) => {
   // Work with options here

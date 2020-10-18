@@ -3,9 +3,9 @@ import {
   compareSelectorLists,
   getSelectorList,
   getSelectors,
-} from "../utils/selectors";
+} from "utils/selectors";
 
-import DollarDeclTree from "../utils/dollar-decl-tree";
+import DollarDeclTree from "utils/dollar-decl-tree";
 
 class PromoteGlobalError extends Error {}
 class DuplicateVarInScopeError extends Error {}

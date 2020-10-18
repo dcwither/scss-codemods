@@ -1,10 +1,12 @@
-const { createProcessor, processFiles } = require("../utils/postcss");
-import removeDashAmpersand from "../plugins/remove-dash-ampersand";
-import removeEmptyRules from "../plugins/remove-empty-rules";
-import removeNestedUnusedDollarVars from "../plugins/remove-nested-unused-dollar-vars";
+import { createProcessor, processFiles } from "utils/postcss";
+
+import removeDashAmpersand from "plugins/remove-dash-ampersand";
+import removeEmptyRules from "plugins/remove-empty-rules";
+import removeNestedUnusedDollarVars from "plugins/remove-nested-unused-dollar-vars";
 
 export const command = "union-class-name <files...>";
-export const describe = "Promotes union class rules to the parent level to improve grepability";
+export const describe =
+  "Promotes union class rules to the parent level to improve grepability";
 
 export const builder = {
   r: {

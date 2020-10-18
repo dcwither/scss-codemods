@@ -1,11 +1,18 @@
+import type { AtRule, Root, Rule } from "postcss";
+
 import { compare } from "specificity";
 import log from "npmlog";
 
-function formatSelector(selector) {
+type ContainerNode = AtRule | Root | Rule;
+
+function formatSelector(selector: string) {
   return selector.replace(/\s\s*/g, " ").trim();
 }
 
-export function combineSelectors(parentSelector, childSelector) {
+export function combineSelectors(
+  parentSelector: string,
+  childSelector: string
+) {
   if (childSelector.includes("&")) {
     return getSelectors(parentSelector)
       .map((parentSelector) => {
@@ -17,25 +24,27 @@ export function combineSelectors(parentSelector, childSelector) {
   }
 }
 
-export function constructSelector(node) {
+export function constructSelector(node: ContainerNode): string {
   if (node.type === "root") {
     return "";
-  } else if (node.type === "atrule") {
-    return constructSelector(node.parent);
+  }
+  const parent = node.parent as ContainerNode;
+  if (node.type === "atrule") {
+    return constructSelector(parent);
   } else {
-    const parentSelector = constructSelector(node.parent);
+    const parentSelector = constructSelector(parent);
     return combineSelectors(parentSelector, node.selector);
   }
 }
 
-export function getSelectors(selector) {
+export function getSelectors(selector: string) {
   return selector
     .split(",")
     .map((selector) => selector.replace(/\s\s*/g, " ").trim());
 }
 
-export function getSelectorList(root) {
-  let selectors = [];
+export function getSelectorList(root: Root) {
+  let selectors: string[] = [];
   root.walkRules((rule) => {
     selectors = selectors.concat(
       constructSelector(rule).split(",").map(formatSelector)
@@ -45,7 +54,10 @@ export function getSelectorList(root) {
   return selectors;
 }
 
-export function getSkipped(precedingBefore, precedingAfter) {
+export function getSkipped(
+  precedingBefore: string[],
+  precedingAfter: string[]
+) {
   const skipped = [];
   for (const selector of precedingAfter) {
     if (!precedingBefore.includes(selector)) {
@@ -55,12 +67,12 @@ export function getSkipped(precedingBefore, precedingAfter) {
   return skipped;
 }
 
-export function compareSelectorLists(before, after) {
+export function compareSelectorLists(before: string[], after: string[]) {
   if (before.join("\n") === after.join("\n")) {
     return "NO_CHANGES";
   }
 
-  const lastSeen = {};
+  const lastSeen: Record<string, number> = {};
 
   for (let beforeIndex = 0; beforeIndex < before.length; beforeIndex++) {
     const selector = before[beforeIndex];
@@ -75,11 +87,15 @@ export function compareSelectorLists(before, after) {
         after.slice(0, afterIndex + 1)
       );
       // Keep for now: debugging logs for unsafe change detection
-      log.silly(`${selector} skipped ${delta} rules: ${skippedSelectors}`);
+      log.silly(
+        "selectors",
+        `${selector} skipped ${delta} rules: ${skippedSelectors}`
+      );
       for (const skippedSelector of skippedSelectors) {
         // moved selector has the same specificity as a skipped selector
         if (compare(selector, skippedSelector) === 0) {
           log.silly(
+            "selectors",
             `"${selector}" might have made a bad move past "${skippedSelectors} with the same specificity"`
           );
           return "UNSAFE_CHANGES";

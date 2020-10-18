@@ -30,7 +30,7 @@ export const builder = {
 };
 
 export const handler = (argv) => {
-  processFiles(
+  return processFiles(
     argv.files,
     createProcessor([
       removeDashAmpersand({

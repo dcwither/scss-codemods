@@ -34,7 +34,7 @@ export const builder = (yargs) => {
 
 export const handler = (argv) => {
   const config = JSON.parse(readFileSync(argv.config, "utf8"));
-  processFiles(
+  return processFiles(
     argv.files,
     createProcessor([
       hexToTokens({

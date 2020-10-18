@@ -25,6 +25,5 @@ export const processFiles = function processFiles(files, process) {
     })
   ).catch((error) => {
     log.error(error);
-    process.exit(1);
   });
 };

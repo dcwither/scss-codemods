@@ -1,4 +1,4 @@
-import { createProcessor } from "../utils/postcss";
+import { createProcessor } from "utils/postcss";
 import hexToTokens from "./hex-to-tokens";
 
 const sharedConfig = [

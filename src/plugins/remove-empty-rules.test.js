@@ -1,4 +1,4 @@
-import { createProcessor } from "../utils/postcss";
+import { createProcessor } from "utils/postcss";
 import removeEmptyRules from "./remove-empty-rules";
 
 const process = createProcessor(removeEmptyRules());

@@ -1,6 +1,6 @@
 import { compareSelectorLists, getSelectorList } from "./selectors";
 
-import { createProcessor } from "../utils/postcss";
+import { createProcessor } from "utils/postcss";
 
 const process = createProcessor({
   postcssPlugin: "identity",

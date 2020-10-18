@@ -1,5 +1,5 @@
-const { createProcessor } = require("../utils/postcss");
-const removeEmptyRules = require("./remove-empty-rules");
+import { createProcessor } from "../utils/postcss";
+import removeEmptyRules from "./remove-empty-rules";
 
 const process = createProcessor(removeEmptyRules());
 

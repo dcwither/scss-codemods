@@ -1,5 +1,5 @@
-const { createProcessor } = require("../utils/postcss");
-const removeDashAmpersand = require("./remove-dash-ampersand");
+import { createProcessor } from "../utils/postcss";
+import removeDashAmpersand from "./remove-dash-ampersand";
 
 function testCommonBehavior(process) {
   describe("unwind", () => {

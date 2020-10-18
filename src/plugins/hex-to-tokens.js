@@ -1,5 +1,5 @@
-const convert = require("color-convert");
-const DeltaE = require("delta-e");
+import convert from "color-convert";
+import DeltaE from "delta-e";
 
 function hexToLab(hexColor) {
   const [L, A, B] = convert.hex.lab.raw(hexColor.substr(1));
@@ -10,7 +10,7 @@ function withinEpsilon(num, epsilon = Number.EPSILON) {
   return Math.abs(num) < epsilon;
 }
 
-module.exports = (opts) => {
+export default (opts) => {
   opts = {
     // default values
     threshold: 0,

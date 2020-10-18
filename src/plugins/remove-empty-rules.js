@@ -1,4 +1,4 @@
-module.exports = (options = {}) => {
+export default (options = {}) => {
   // Work with options here
   return {
     postcssPlugin: "remove-empty-rules",

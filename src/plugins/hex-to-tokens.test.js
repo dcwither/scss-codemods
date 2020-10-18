@@ -1,5 +1,5 @@
-const { createProcessor } = require("../utils/postcss");
-const hexToTokens = require("./hex-to-tokens");
+import { createProcessor } from "../utils/postcss";
+import hexToTokens from "./hex-to-tokens";
 
 const sharedConfig = [
   {

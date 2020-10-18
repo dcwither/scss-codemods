@@ -1,11 +1,11 @@
-const { compare } = require("specificity");
-const log = require("npmlog");
+import { compare } from "specificity";
+import log from "npmlog";
 
 function formatSelector(selector) {
   return selector.replace(/\s\s*/g, " ").trim();
 }
 
-function combineSelectors(parentSelector, childSelector) {
+export function combineSelectors(parentSelector, childSelector) {
   if (childSelector.includes("&")) {
     return getSelectors(parentSelector)
       .map((parentSelector) => {
@@ -17,7 +17,7 @@ function combineSelectors(parentSelector, childSelector) {
   }
 }
 
-function constructSelector(node) {
+export function constructSelector(node) {
   if (node.type === "root") {
     return "";
   } else if (node.type === "atrule") {
@@ -28,13 +28,13 @@ function constructSelector(node) {
   }
 }
 
-function getSelectors(selector) {
+export function getSelectors(selector) {
   return selector
     .split(",")
     .map((selector) => selector.replace(/\s\s*/g, " ").trim());
 }
 
-function getSelectorList(root) {
+export function getSelectorList(root) {
   let selectors = [];
   root.walkRules((rule) => {
     selectors = selectors.concat(
@@ -45,7 +45,7 @@ function getSelectorList(root) {
   return selectors;
 }
 
-function getSkipped(precedingBefore, precedingAfter) {
+export function getSkipped(precedingBefore, precedingAfter) {
   const skipped = [];
   for (const selector of precedingAfter) {
     if (!precedingBefore.includes(selector)) {
@@ -55,7 +55,7 @@ function getSkipped(precedingBefore, precedingAfter) {
   return skipped;
 }
 
-function compareSelectorLists(before, after) {
+export function compareSelectorLists(before, after) {
   if (before.join("\n") === after.join("\n")) {
     return "NO_CHANGES";
   }
@@ -89,10 +89,3 @@ function compareSelectorLists(before, after) {
   }
   return "SAFE_CHANGES";
 }
-
-module.exports = {
-  combineSelectors,
-  compareSelectorLists,
-  getSelectorList,
-  getSelectors,
-};

@@ -9,7 +9,7 @@ function isAncestor(ancestor, descendant) {
   return false;
 }
 
-module.exports = class DollarDeclTree {
+export default class DollarDeclTree {
   constructor(root) {
     this.root = root;
     this.dollarDecls = {};

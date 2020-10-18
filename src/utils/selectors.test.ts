@@ -6,7 +6,7 @@ const process = createProcessor({
   postcssPlugin: "identity",
   Root() {},
 });
-const selectorsFromSCSS = async (scss) => {
+const selectorsFromSCSS = async (scss: string) => {
   return getSelectorList(await process(scss).root);
 };
 

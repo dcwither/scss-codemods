@@ -1,14 +1,12 @@
 const { createProcessor, processFiles } = require("../utils/postcss");
-const removeDashAmpersand = require("../plugins/remove-dash-ampersand");
-const removeEmptyRules = require("../plugins/remove-empty-rules");
-const removeNestedUnusedDollarVars = require("../plugins/remove-nested-unused-dollar-vars");
+import removeDashAmpersand from "../plugins/remove-dash-ampersand";
+import removeEmptyRules from "../plugins/remove-empty-rules";
+import removeNestedUnusedDollarVars from "../plugins/remove-nested-unused-dollar-vars";
 
-exports.command = "union-class-name <files...>";
+export const command = "union-class-name <files...>";
+export const describe = "Promotes union class rules to the parent level to improve grepability";
 
-exports.describe =
-  "Promotes union class rules to the parent level to improve grepability";
-
-exports.builder = {
+export const builder = {
   r: {
     alias: "reorder",
     describe: "reorder promoted rules rules ",
@@ -29,7 +27,7 @@ exports.builder = {
   },
 };
 
-exports.handler = (argv) => {
+export const handler = (argv) => {
   processFiles(
     argv.files,
     createProcessor([

@@ -1,10 +1,11 @@
-const DollarDeclTree = require("../utils/dollar-decl-tree");
-const {
+import {
   combineSelectors,
   compareSelectorLists,
   getSelectorList,
   getSelectors,
-} = require("../utils/selectors");
+} from "../utils/selectors";
+
+import DollarDeclTree from "../utils/dollar-decl-tree";
 
 class PromoteGlobalError extends Error {}
 class DuplicateVarInScopeError extends Error {}
@@ -119,7 +120,7 @@ function shouldPromoteNestingSelectorRules(rule, dollarDecls, { Root }, opts) {
   }
 }
 
-module.exports = (opts) => {
+export default (opts) => {
   opts = {
     // default values
     reorder: "no-reorder",

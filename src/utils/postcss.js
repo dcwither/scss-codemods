@@ -1,10 +1,10 @@
-const { writeFileSync, readFileSync } = require("fs");
+import { readFileSync, writeFileSync } from "fs";
 
-const postcss = require("postcss");
-const postcssScss = require("postcss-scss");
-const log = require("npmlog");
+import log from "npmlog";
+import postcss from "postcss";
+import postcssScss from "postcss-scss";
 
-exports.createProcessor = function createProcessor(plugins) {
+export const createProcessor = function createProcessor(plugins) {
   const configured = postcss(plugins);
   return (css) => {
     return configured.process(css, {
@@ -14,7 +14,7 @@ exports.createProcessor = function createProcessor(plugins) {
   };
 };
 
-exports.processFiles = function processFiles(files, process) {
+export const processFiles = function processFiles(files, process) {
   return Promise.all(
     files.map((file) => {
       const css = readFileSync(file, "utf8");

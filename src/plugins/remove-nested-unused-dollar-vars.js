@@ -1,6 +1,6 @@
-const DollarDeclTree = require("../utils/dollar-decl-tree");
+import DollarDeclTree from "../utils/dollar-decl-tree";
 
-module.exports = (options = {}) => {
+export default (options = {}) => {
   // Work with options here
   return {
     postcssPlugin: "remove-nested-unused-dollar-vars",

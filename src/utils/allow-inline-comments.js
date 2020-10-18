@@ -1,4 +1,4 @@
-const Stringifier = require("postcss/lib/stringifier");
+import Stringifier from "postcss/lib/stringifier";
 
 // monkey patch postcss comments to ensure they remain inline
 Stringifier.prototype.comment = function (node) {

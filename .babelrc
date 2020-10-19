@@ -5,7 +5,8 @@
     [
       "module-resolver",
       {
-        "root": ["./src"]
+        "root": ["./src"],
+        "extensions": [".js", ".ts"]
       }
     ]
   ]

@@ -45,7 +45,7 @@ export function getSelectors(selector: string) {
 
 export function getSelectorList(root: Root) {
   let selectors: string[] = [];
-  root.walkRules((rule) => {
+  root.walkRules((rule: Rule) => {
     selectors = selectors.concat(
       constructSelector(rule).split(",").map(formatSelector)
     );

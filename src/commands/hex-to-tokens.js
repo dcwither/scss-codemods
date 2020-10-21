@@ -26,7 +26,7 @@ export const builder = (yargs) => {
     })
     .check((argv) => {
       if (argv.threshold < 0 || argv.threshold > 100) {
-        throw new Error("tThreshold must be within the range [0, 100]");
+        throw new Error("Threshold must be within the range [0, 100]");
       }
       return true;
     });

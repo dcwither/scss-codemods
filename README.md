@@ -34,7 +34,7 @@ scss-codemods union-class-name --reorder no-reorder <files>
 
 #### `--reorder`
 
-Determines the freedom provided to the codemod to reorder rules to better match the desired format (default behavior: `no-reorder`).
+Determines the freedom provided to the codemod to reorder rules to better match the desired format (default: `no-reorder`).
 
 
 **Values:**
@@ -46,7 +46,7 @@ Determines the freedom provided to the codemod to reorder rules to better match 
 
 #### `--promote-dollar-vars`
 
-Determines how dollar vars will be promoted (default behavior: `global`). **not implemented**
+Determines how dollar vars will be promoted (default: `global`). **not implemented**
 
 **Values:**
 - `no-global`: won't promote a dollar var to global context, prevents some rules from being promoted.
@@ -54,9 +54,56 @@ Determines how dollar vars will be promoted (default behavior: `global`). **not 
 
 #### Not Implemented: `--namespace-dollar-vars`
 
-Determines how dollar var promotion namespacing behavior (default behavior: `no-namespace`).
+Determines how dollar var promotion namespacing behavior (default: `no-namespace`).
 
 - `no-namespace`: will promote a dollar var as necessary, will fail if there are duplicate vars at the same level as the promoted var.
 - `namespace-when-necessary`: will namespace a dollar var with the classname it was promoted out of, will still fail if there is a duplicate promoted var.
 - `namespace-always`: will always namespace dollar vars with the classname 
 
+## `hex-to-tokens`
+
+Replaces hex colors with tokens defined in a config. Allows for close matches through use of [Delta E](https://en.wikipedia.org/wiki/Color_difference#CIEDE2000) color distance algorithm.
+
+e.g.
+
+```
+.rule {
+  color: #0000FF
+}
+
+// becomes
+
+.rule {
+  color: $blue;
+}
+```
+
+### Usage
+
+```bash
+scss-codemods hex-to-tokens --config tokens.json <files>
+```
+
+### Options
+
+#### `--config`
+
+Path to a `json` file with the following format:
+```json
+[
+  {
+    "hex": "#ffffff",
+    "name": "$white"
+  },
+  {
+
+    "hex": "#f8f9fa",
+    "name": "$gray-100"
+  },
+  ...
+]
+```
+
+#### `--threshold`
+
+A number within the range [0, 100] representing the Delta E [threshold](http://zschuessler.github.io/DeltaE/learn/#toc-defining-delta-e) for color matches (default: `0`).

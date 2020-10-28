@@ -12,8 +12,8 @@ export const builder = {
   r: {
     alias: "reorder",
     describe: "reorder promoted rules rules ",
-    choices: ["no-reorder", "safe-reorder", "unsafe-reorder"],
-    default: "no-reorder",
+    choices: ["never", "safe-only", "allow-unsafe"],
+    default: "never",
   },
   p: {
     alias: "promote-dollar-vars",
@@ -24,8 +24,8 @@ export const builder = {
   n: {
     alias: "namespace-dollar-vars",
     describe: "namespace promoted dollar vars",
-    choices: ["no-namespace", "namespace-when-necessary", "namespace-always"],
-    default: "no-namespace",
+    choices: ["never", "when-necessary", "always"],
+    default: "never",
   },
 };
 

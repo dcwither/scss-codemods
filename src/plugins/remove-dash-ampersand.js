@@ -112,20 +112,18 @@ function shouldPromoteNestingSelectorRules(rule, dollarDecls, { Root }, opts) {
     case "NO_CHANGES":
       return true;
     case "SAFE_CHANGES":
-      return (
-        opts.reorder === "safe-reorder" || opts.reorder === "unsafe-reorder"
-      );
+      return opts.reorder === "safe-only" || opts.reorder === "allow-unsafe";
     case "UNSAFE_CHANGES":
-      return opts.reorder === "unsafe-reorder";
+      return opts.reorder === "allow-unsafe";
   }
 }
 
 export default (opts) => {
   opts = {
     // default values
-    reorder: "no-reorder",
+    reorder: "never",
     promoteDollarVars: "global",
-    namespaceDollarVars: "no-namespace",
+    namespaceDollarVars: "never",
     ...opts,
   };
   // Work with options here

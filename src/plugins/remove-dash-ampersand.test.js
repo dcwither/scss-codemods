@@ -360,10 +360,8 @@ function testCommonBehavior(process) {
 }
 
 describe("remove-dash-ampersand", () => {
-  describe("reorder: no-reorder", () => {
-    const process = createProcessor(
-      removeDashAmpersand({ reorder: "no-reorder" })
-    );
+  describe("reorder: never", () => {
+    const process = createProcessor(removeDashAmpersand({ reorder: "never" }));
 
     testCommonBehavior(process);
 
@@ -427,9 +425,9 @@ describe("remove-dash-ampersand", () => {
     });
   });
 
-  describe("reorder: safe-reorder", () => {
+  describe("reorder: safe-only", () => {
     const process = createProcessor(
-      removeDashAmpersand({ reorder: "safe-reorder" })
+      removeDashAmpersand({ reorder: "safe-only" })
     );
 
     testCommonBehavior(process);
@@ -475,9 +473,9 @@ describe("remove-dash-ampersand", () => {
     });
   });
 
-  describe("reorder: unsafe-reorder", () => {
+  describe("reorder: allow-unsafe", () => {
     const process = createProcessor(
-      removeDashAmpersand({ reorder: "unsafe-reorder" })
+      removeDashAmpersand({ reorder: "allow-unsafe" })
     );
 
     testCommonBehavior(process);

@@ -2,17 +2,22 @@
   "name": "scss-codemods",
   "version": "0.0.0",
   "description": "SCSS codemods written with postcss plugins",
-  "main": "postcss.config.js",
   "bin": {
     "scss-codemods": "cli.js"
   },
   "scripts": {
     "build": "babel src --out-dir build --extensions .ts,.js --ignore src/**/*.test.js,src/**/*.test.ts,src/**/*.d.ts",
+    "clean": "rm -rf build",
     "lint": "eslint --ignore-path=.gitignore .",
     "start": "npm run build -- --watch",
+    "prepublishOnly": "npm run clean && npm run build",
     "test": "jest src",
     "typecheck": "tsc --project . --noEmit"
   },
+  "files": [
+    "cli.js",
+    "build/"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/dcwither/scss-codemods.git"

@@ -16,7 +16,7 @@ function shouldGoAfter(decl, node) {
     (node.type === "atrule" && node.name === "import") ||
     (node.type === "decl" &&
       node.prop.startsWith("$") &&
-      !node.value.includes(decl.prop))
+      !node.value.match(RegExp(`\\${decl.prop}(?![\\w-])`)))
   );
 }
 
@@ -30,13 +30,17 @@ function insertDeclInPlace(parent, decl) {
     beforeNode = beforeNode.next();
   }
 
-  parent.insertBefore(beforeNode, decl);
+  beforeNode.before(decl);
 }
 
 function recursivePromoteDollarDecls(dollarDecls, decl, rule, opts) {
   for (const dollarProp of dollarDecls.props) {
     const dollarDecl = dollarDecls.getDollarDecl(rule, dollarProp);
-    if (dollarDecl && dollarDecl.parent === rule.parent) {
+    if (
+      decl.value.match(RegExp(`\\${dollarProp}(?![\\w-])`)) &&
+      dollarDecl &&
+      dollarDecl.parent === rule.parent
+    ) {
       if (!dollarDecls.canPromoteDecl(dollarDecl)) {
         throw new DuplicateVarInScopeError(
           `Cannot promote decl ${dollarDecl} at ${dollarDecl.source.start.line}:${dollarDecl.source.start.column}`

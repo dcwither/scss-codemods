@@ -356,6 +356,36 @@ function testCommonBehavior(process) {
         }
       `);
     });
+
+    it(`shouldn't promote dollar vars that aren't used by promoted rules`, async () => {
+      expect(
+        await process(`
+          // comment
+          @import "something";
+  
+          $var: 1;
+          .rule {
+            $blue: #0000FF;
+            $light-blue: #5555FF;
+            &-part1 {
+              color: $light-blue;
+            }
+          }
+        `)
+      ).toMatchInlineSnapshot(`
+        // comment
+        @import "something";
+
+        $var: 1;
+        $light-blue: #5555ff;
+        .rule {
+          $blue: #0000ff;
+        }
+        .rule-part1 {
+          color: $light-blue;
+        }
+      `);
+    });
   });
 }
 

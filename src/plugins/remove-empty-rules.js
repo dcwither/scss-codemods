@@ -2,7 +2,7 @@ export default (options = {}) => {
   // Work with options here
   return {
     postcssPlugin: "remove-empty-rules",
-    Root(root) {
+    Once(root) {
       let removed;
       // innefficient, but simple - keep repeating until there's been no changes
       do {

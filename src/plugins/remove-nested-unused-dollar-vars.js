@@ -4,7 +4,7 @@ export default (options = {}) => {
   // Work with options here
   return {
     postcssPlugin: "remove-nested-unused-dollar-vars",
-    Root(root) {
+    Once(root) {
       new DollarDeclTree(root).removeUnused();
     },
   };

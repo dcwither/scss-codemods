@@ -60,7 +60,7 @@
     "delta-e": "0.0.8",
     "minimist": "^1.2.5",
     "npmlog": "^4.1.2",
-    "postcss": "^8.0.9",
+    "postcss": "^8.1.4",
     "postcss-scss": "^3.0.1",
     "specificity": "^0.4.1",
     "yargs": "^16.0.3"

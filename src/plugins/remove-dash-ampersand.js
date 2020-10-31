@@ -129,7 +129,7 @@ export default (opts) => {
   // Work with options here
   return {
     postcssPlugin: "remove-dash-ampersand",
-    Root(root, postcss) {
+    Once(root, postcss) {
       const dollarDecls = new DollarDeclTree(root);
 
       root.walkRules((rule) => {

@@ -1,6 +1,6 @@
 {
   "name": "scss-codemods",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "SCSS codemods written with postcss plugins",
   "bin": {
     "scss-codemods": "cli.js"

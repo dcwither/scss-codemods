@@ -4,7 +4,7 @@ import { createProcessor } from "utils/postcss";
 
 const process = createProcessor({
   postcssPlugin: "identity",
-  Root() {},
+  Once() {},
 });
 const selectorsFromSCSS = async (scss: string) => {
   return getSelectorList(await process(scss).root);

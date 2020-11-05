@@ -7,9 +7,10 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "outDir": "build",
+    "outDir": "dist",
     "rootDir": "./src",
     "baseUrl": "./src",
+    "types": ["node", "jest"],
     "allowJs": true
   },
   "include": ["src/"]

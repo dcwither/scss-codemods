@@ -1,7 +1,8 @@
+import LazyResult from "postcss/lib/lazy-result";
 import { createProcessor } from "utils/postcss";
 import removeDashAmpersand from "./remove-dash-ampersand";
 
-function testCommonBehavior(process) {
+function testCommonBehavior(process: (css: string) => LazyResult) {
   describe("unwind", () => {
     it("should fold out dash ampersand rules", async () => {
       expect(
@@ -10,7 +11,7 @@ function testCommonBehavior(process) {
             &-part1 {}
           }
         `)
-      ).toMatchInlineSnapshot(`
+      ).toMatchCSS(`
         .rule {}
         .rule-part1 {}
       `);
@@ -24,7 +25,7 @@ function testCommonBehavior(process) {
             &-extension2 {}
           }
         `)
-      ).toMatchInlineSnapshot(`
+      ).toMatchCSS(`
         .rule {}
         .rule-extension1 {}
         .rule-extension2 {}
@@ -42,7 +43,7 @@ function testCommonBehavior(process) {
             }
           }
         `)
-      ).toMatchInlineSnapshot(`
+      ).toMatchCSS(`
         .rule {}
         .rule-part1 {}
         .rule-part1-part2 {}
@@ -60,7 +61,7 @@ function testCommonBehavior(process) {
             &-part2 {}
           }
         `)
-      ).toMatchInlineSnapshot(`
+      ).toMatchCSS(`
         .rule1 {}
         .rule1-part1 {}
 
@@ -78,7 +79,7 @@ function testCommonBehavior(process) {
             .something-else {} 
           }
         `)
-      ).toMatchInlineSnapshot(`
+      ).toMatchCSS(`
         .rule {
           &-part1,
           .something-else {}
@@ -94,7 +95,7 @@ function testCommonBehavior(process) {
             &-part1 {}
           }
         `)
-      ).toMatchInlineSnapshot(`
+      ).toMatchCSS(`
         .rule1,
         .rule2 {}
         .rule1-part1,
@@ -110,7 +111,7 @@ function testCommonBehavior(process) {
             &-part2 {} 
           }
         `)
-      ).toMatchInlineSnapshot(`
+      ).toMatchCSS(`
         .rule {}
         .rule-part1,
         .rule-part2 {}
@@ -126,7 +127,7 @@ function testCommonBehavior(process) {
             &-part2 {}
           }
         `)
-      ).toMatchInlineSnapshot(`
+      ).toMatchCSS(`
         .rule1,
         .rule2 {}
         .rule1-part1,
@@ -147,7 +148,7 @@ function testCommonBehavior(process) {
             &-part {}
           }
         `)
-      ).toMatchInlineSnapshot(`
+      ).toMatchCSS(`
         .rule {}
         // preceding comment
         // second preceding comment
@@ -164,7 +165,7 @@ function testCommonBehavior(process) {
             &-part {}
           }
         `)
-      ).toMatchInlineSnapshot(`
+      ).toMatchCSS(`
         .rule {
           // indirectly preceding comment
           .something else {}
@@ -181,7 +182,7 @@ function testCommonBehavior(process) {
             // following comment
           }
         `)
-      ).toMatchInlineSnapshot(`
+      ).toMatchCSS(`
         .rule {
           // following comment
         }
@@ -198,7 +199,7 @@ function testCommonBehavior(process) {
 
           .rule {}
         `)
-      ).toMatchInlineSnapshot(`
+      ).toMatchCSS(`
         $blue: #0000ff;
 
         .rule {}
@@ -218,7 +219,7 @@ function testCommonBehavior(process) {
             }
           }
         `)
-      ).toMatchInlineSnapshot(`
+      ).toMatchCSS(`
         $blue: #0000bb;
         .rule {
           $blue: #0000ff;
@@ -259,7 +260,7 @@ function testCommonBehavior(process) {
             }
           }
         `)
-      ).toMatchInlineSnapshot(`
+      ).toMatchCSS(`
         $blue: #0000ff;
         .rule {}
         .rule-part1 {
@@ -283,7 +284,7 @@ function testCommonBehavior(process) {
             }
           }
         `)
-      ).toMatchInlineSnapshot(`
+      ).toMatchCSS(`
         // comment
         @import "something";
 
@@ -312,7 +313,7 @@ function testCommonBehavior(process) {
             }
           }
         `)
-      ).toMatchInlineSnapshot(`
+      ).toMatchCSS(`
         // comment
         @import "something";
 
@@ -343,7 +344,7 @@ function testCommonBehavior(process) {
             }
           }
         `)
-      ).toMatchInlineSnapshot(`
+      ).toMatchCSS(`
         // comment
         @import "something";
 
@@ -372,7 +373,7 @@ function testCommonBehavior(process) {
             }
           }
         `)
-      ).toMatchInlineSnapshot(`
+      ).toMatchCSS(`
         // comment
         @import "something";
 
@@ -411,7 +412,7 @@ describe("remove-dash-ampersand", () => {
             .something-else2 {} 
           }
         `)
-      ).toMatchInlineSnapshot(`
+      ).toMatchCSS(`
         .rule1 {
           &-part1 {}
           &-part2 {}
@@ -441,7 +442,7 @@ describe("remove-dash-ampersand", () => {
             &-part2 {}
           }
         `)
-      ).toMatchInlineSnapshot(`
+      ).toMatchCSS(`
         .rule1 {
           &-part1 {}
           &-part2 {}

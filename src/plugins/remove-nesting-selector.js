@@ -132,7 +132,7 @@ export default (opts) => {
   };
   // Work with options here
   return {
-    postcssPlugin: "remove-dash-ampersand",
+    postcssPlugin: "remove-nesting-selector",
     Once(root, postcss) {
       const dollarDecls = new DollarDeclTree(root);
 

@@ -11,7 +11,7 @@
     "build:types": "tsc --project . --declaration --emitDeclarationOnly",
     "clean": "rm -rf dist",
     "lint": "eslint --ignore-path=.gitignore .",
-    "start": "npm run build -- --watch",
+    "start": "npm run build:js -- --watch",
     "prepublishOnly": "npm run clean && npm run build",
     "test": "jest src",
     "typecheck": "tsc --project . --noEmit"

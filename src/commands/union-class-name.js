@@ -1,8 +1,8 @@
 import { createProcessor, processFiles } from "utils/postcss";
 
-import removeDashAmpersand from "plugins/remove-dash-ampersand";
 import removeEmptyRules from "plugins/remove-empty-rules";
 import removeNestedUnusedDollarVars from "plugins/remove-nested-unused-dollar-vars";
+import removeNestingSelector from "plugins/remove-nesting-selector";
 
 export const command = "union-class-name <files...>";
 export const describe =
@@ -33,7 +33,7 @@ export const handler = (argv) => {
   return processFiles(
     argv.files,
     createProcessor([
-      removeDashAmpersand({
+      removeNestingSelector({
         reorder: argv.reorder,
         promoteDollarVars: argv.promoteDollarVars,
         namespaceDollarVars: argv.namespaceDollarVars,

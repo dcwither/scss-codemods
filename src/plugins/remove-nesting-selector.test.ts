@@ -1,6 +1,6 @@
 import LazyResult from "postcss/lib/lazy-result";
 import { createProcessor } from "utils/postcss";
-import removeDashAmpersand from "./remove-dash-ampersand";
+import removeNestingSelector from "./remove-nesting-selector";
 
 function testCommonBehavior(process: (css: string) => LazyResult) {
   describe("unwind", () => {
@@ -390,9 +390,11 @@ function testCommonBehavior(process: (css: string) => LazyResult) {
   });
 }
 
-describe("remove-dash-ampersand", () => {
+describe("remove-nesting-selector", () => {
   describe("reorder: never", () => {
-    const process = createProcessor(removeDashAmpersand({ reorder: "never" }));
+    const process = createProcessor(
+      removeNestingSelector({ reorder: "never" })
+    );
 
     testCommonBehavior(process);
 
@@ -458,7 +460,7 @@ describe("remove-dash-ampersand", () => {
 
   describe("reorder: safe-only", () => {
     const process = createProcessor(
-      removeDashAmpersand({ reorder: "safe-only" })
+      removeNestingSelector({ reorder: "safe-only" })
     );
 
     testCommonBehavior(process);
@@ -506,7 +508,7 @@ describe("remove-dash-ampersand", () => {
 
   describe("reorder: allow-unsafe", () => {
     const process = createProcessor(
-      removeDashAmpersand({ reorder: "allow-unsafe" })
+      removeNestingSelector({ reorder: "allow-unsafe" })
     );
 
     testCommonBehavior(process);
@@ -530,7 +532,7 @@ describe("remove-dash-ampersand", () => {
 
   describe("promote-dollar-vars: no-global", () => {
     const process = createProcessor(
-      removeDashAmpersand({ promoteDollarVars: "no-global" })
+      removeNestingSelector({ promoteDollarVars: "no-global" })
     );
 
     it("won't promote rules with dollar vars that will be promoted to global", async () => {
